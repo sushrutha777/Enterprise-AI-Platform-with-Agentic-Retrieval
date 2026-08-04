@@ -1,0 +1,19 @@
+{
+  "include": [
+    ".",
+    "app",
+    "src",
+    "tests"
+  ],
+  "extraPaths": [
+    ".",
+    "src",
+    "app"
+  ],
+  "reportMissingTypeStubs": false,
+  "reportMissingImports": "none",
+  "reportUnknownMemberType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownArgumentType": false,
+  "reportGeneralTypeIssues": "none"
+}
