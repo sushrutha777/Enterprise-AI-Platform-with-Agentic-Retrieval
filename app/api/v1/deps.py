@@ -33,5 +33,7 @@ def get_chat_service(
 ) -> ChatService:
     global _chat_service
     if _chat_service is None:
-        _chat_service = ChatService(dense, sparse)
+        d = dense if isinstance(dense, BaseRetriever) else get_dense_retriever()
+        s = sparse if isinstance(sparse, SparseBM25Retriever) else get_sparse_retriever()
+        _chat_service = ChatService(d, s)
     return _chat_service

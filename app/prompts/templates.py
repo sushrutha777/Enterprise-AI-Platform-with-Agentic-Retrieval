@@ -41,8 +41,8 @@ User: {question}
 Respond naturally:"""
 
 
-SYNTHESIS_PROMPT = """You are an intelligent, factual AI assistant.
-Answer the user's question using ONLY the provided Context and Conversation History.
+SYNTHESIS_PROMPT = """You are an intelligent, accurate, and helpful AI assistant.
+Answer the user's question clearly and concisely using the provided Context and your knowledge.
 
 Context:
 {context}
@@ -54,10 +54,10 @@ Question:
 {question}
 
 INSTRUCTIONS:
-1. Base your answer primarily on the provided Context.
-2. If the Context is brief or incomplete, synthesize a clear, factual, and complete answer from it.
-3. If the Context does not contain the answer, say "I don't have enough information to answer that."
-4. Maintain conversational continuity using the History (e.g., resolving pronouns).
+1. Prioritize facts provided in the Context (retrieved documents, web results, or Wikipedia articles).
+2. If the Context directly answers the question, provide a clear, well-formatted response.
+3. If the Context is brief or incomplete for a general knowledge question, provide a helpful, accurate answer using your general knowledge while incorporating any relevant context facts.
+4. Maintain conversational continuity using the Conversation History.
 5. Keep the answer direct, concise, and formatted with clean markdown.
 
 Answer:"""

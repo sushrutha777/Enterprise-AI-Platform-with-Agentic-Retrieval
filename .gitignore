@@ -55,7 +55,6 @@ pnpm-debug.log*
 # Vector Databases, Storage & Local Cache
 faiss_index/
 qdrant_data/
-data/
 *.db
 *.sqlite
 *.sqlite3

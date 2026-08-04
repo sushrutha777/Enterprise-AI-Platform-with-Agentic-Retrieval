@@ -23,7 +23,7 @@ class WebSearchTool(BaseAgentTool):
             return list(ddgs.text(query, max_results=3))
 
     async def run(self, query: str) -> ToolResult:
-        if self.tavily_key:
+        if self.tavily_key and not self.tavily_key.startswith("your_"):
             try:
                 from langchain_community.tools.tavily_search import TavilySearchResults
                 tavily = TavilySearchResults(tavily_api_key=self.tavily_key, max_results=3)

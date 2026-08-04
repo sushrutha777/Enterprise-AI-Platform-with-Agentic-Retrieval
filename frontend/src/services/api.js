@@ -106,9 +106,19 @@ export async function streamChat({
  * Check backend health
  */
 export async function checkHealth() {
-  const response = await fetch(`${API_BASE}/health/ready`);
-  if (!response.ok) throw new Error('Backend offline');
-  return response.json();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4000);
+  try {
+    const response = await fetch(`${API_BASE}/health/ready`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) throw new Error('Backend offline');
+    return await response.json();
+  } catch (e) {
+    clearTimeout(timeoutId);
+    throw e;
+  }
 }
 
 /**

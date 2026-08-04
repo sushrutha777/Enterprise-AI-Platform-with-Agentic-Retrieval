@@ -40,7 +40,14 @@ class QdrantRetriever(BaseRetriever):
             )
         else:
             logger.info(f"Initializing local persistent Qdrant storage at {settings.QDRANT_PATH}")
-            return QdrantClient(path=settings.QDRANT_PATH)
+            for attempt in range(3):
+                try:
+                    return QdrantClient(path=settings.QDRANT_PATH)
+                except Exception as e:
+                    if "already accessed by another instance" in str(e) and attempt < 2:
+                        time.sleep(1.0)
+                        continue
+                    raise e
 
     def _init_vectorstore(self):
         """Initialize QdrantVectorStore if collection exists."""

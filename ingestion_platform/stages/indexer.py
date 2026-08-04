@@ -34,7 +34,7 @@ class QdrantIndexer:
             logger.info(f"Creating Qdrant collection: {self.collection_name}")
             self.client.create_collection(
                 collection_name=self.collection_name,
-                vectors_config=VectorParams(size=768, distance=Distance.COSINE),
+                vectors_config=VectorParams(size=3072, distance=Distance.COSINE),
             )
 
     def index(self, documents: List[StandardDocument]) -> None:

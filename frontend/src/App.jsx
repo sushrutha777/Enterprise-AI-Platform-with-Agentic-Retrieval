@@ -11,7 +11,28 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
+  // Responsive Sidebar States
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
   const abortControllerRef = useRef(null);
+  // Guard flag: when true, skip the session→messages sync effect
+  // so that handleSend's setMessages is not overwritten.
+  const isSendingRef = useRef(false);
+
+  // Detect Mobile Viewport
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarOpen(false);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Load local sessions
   useEffect(() => {
@@ -24,7 +45,7 @@ export default function App() {
     }
   }, []);
 
-  // Sync sessions when updated
+  // Sync sessions to localStorage when updated
   useEffect(() => {
     const storageKey = `agentic_rag_sessions_local`;
     try {
@@ -34,21 +55,36 @@ export default function App() {
     }
   }, [sessions]);
 
-  // Check health on mount
+  // Check backend health on mount and poll periodically every 8s
   useEffect(() => {
-    const init = async () => {
+    let isMounted = true;
+    const verifyHealth = async () => {
       try {
         const health = await checkHealth();
-        setIsOnline(health.status === 'ready');
+        if (isMounted) {
+          setIsOnline(health.status === 'ready' || health.status === 'healthy');
+        }
       } catch {
-        setIsOnline(false);
+        if (isMounted) {
+          setIsOnline(false);
+        }
       }
     };
-    init();
+
+    verifyHealth();
+    const interval = setInterval(verifyHealth, 8000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
-  // When active session changes, load its messages
+  // When user clicks a session in the sidebar, load its messages.
+  // Skip when a send is in progress — handleSend manages messages directly.
   useEffect(() => {
+    if (isSendingRef.current) return;
+
     if (activeSessionId) {
       const current = sessions.find((s) => s.id === activeSessionId);
       if (current) {
@@ -57,13 +93,27 @@ export default function App() {
     } else {
       setMessages([]);
     }
-  }, [activeSessionId, sessions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSessionId]);
+
+  // Toggle Sidebar
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  // Close Mobile Sidebar
+  const handleCloseMobile = () => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   // Create new session / Reset view
   const handleNewSession = () => {
     if (isLoading && abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+    isSendingRef.current = false;
     setActiveSessionId(null);
     setMessages([]);
     setInput('');
@@ -95,13 +145,17 @@ export default function App() {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       setIsLoading(false);
+      isSendingRef.current = false;
     }
   };
 
   // Send message
   const handleSend = async (overridePrompt) => {
-    const promptToSend = (overridePrompt || input).trim();
+    const promptToSend = (typeof overridePrompt === 'string' ? overridePrompt : input).trim();
     if (!promptToSend || isLoading) return;
+
+    // Set guard so the session→messages sync effect doesn't overwrite us
+    isSendingRef.current = true;
 
     let currentSessionId = activeSessionId;
     if (!currentSessionId) {
@@ -154,6 +208,7 @@ export default function App() {
 
     let accumulatedContent = '';
     let messageId = null;
+    let latestSources = [];
 
     await streamChat({
       question: promptToSend,
@@ -176,6 +231,7 @@ export default function App() {
       },
       onMetadata: (meta) => {
         messageId = meta.message_id || messageId;
+        latestSources = meta.sources || [];
         setMessages((prev) => {
           const next = [...prev];
           const lastIdx = next.length - 1;
@@ -208,24 +264,28 @@ export default function App() {
       onDone: (doneData) => {
         const finalAnswer = (doneData.full_answer || accumulatedContent || '').trim();
         const finalMsgId = doneData.message_id || messageId;
+
+        const finalAssistantMessage = {
+          id: finalMsgId,
+          role: 'assistant',
+          content: finalAnswer,
+          tool_used: doneData.tool_used,
+          source_type: doneData.source_type,
+          latency_seconds: doneData.latency_seconds,
+          sources: latestSources,
+          stepLabel: null,
+        };
+
         setMessages((prev) => {
           const next = [...prev];
           const lastIdx = next.length - 1;
           if (lastIdx >= 0 && next[lastIdx].role === 'assistant') {
-            next[lastIdx] = {
-              ...next[lastIdx],
-              id: finalMsgId,
-              content: finalAnswer,
-              tool_used: doneData.tool_used || next[lastIdx].tool_used,
-              source_type: doneData.source_type || next[lastIdx].source_type,
-              latency_seconds: doneData.latency_seconds,
-              stepLabel: null,
-            };
+            next[lastIdx] = finalAssistantMessage;
           }
           return next;
         });
 
-        // Persist to session
+        // Persist final messages to session
         setSessions((prevSessions) =>
           prevSessions.map((s) => {
             if (s.id === currentSessionId) {
@@ -234,22 +294,17 @@ export default function App() {
                 messages: [
                   ...(s.messages || []),
                   userMessage,
-                  {
-                    id: finalMsgId,
-                    role: 'assistant',
-                    content: finalAnswer,
-                    tool_used: doneData.tool_used,
-                    source_type: doneData.source_type,
-                    latency_seconds: doneData.latency_seconds,
-                    sources: nextLastAssistantSources(updatedMessages),
-                  },
+                  finalAssistantMessage,
                 ],
               };
             }
             return s;
           })
         );
+
         setIsLoading(false);
+        // Release guard
+        isSendingRef.current = false;
       },
       onError: (err) => {
         setMessages((prev) => {
@@ -265,24 +320,26 @@ export default function App() {
           return next;
         });
         setIsLoading(false);
+        isSendingRef.current = false;
       },
     });
-  };
-
-  const nextLastAssistantSources = (msgList) => {
-    const last = msgList[msgList.length - 1];
-    return last?.sources || [];
   };
 
   return (
     <div className="flex h-screen w-screen bg-[#000000] text-white overflow-hidden font-sans">
       <Sidebar
+        isOpen={isSidebarOpen}
+        onToggle={handleToggleSidebar}
+        isMobile={isMobile}
+        onCloseMobile={handleCloseMobile}
         sessions={sessions}
         activeSessionId={activeSessionId}
-        onSelectSession={setActiveSessionId}
+        onSelectSession={(id) => {
+          isSendingRef.current = false;
+          setActiveSessionId(id);
+        }}
         onNewSession={handleNewSession}
         onDeleteSession={handleDeleteSession}
-        user={{ username: 'Admin' }}
       />
 
       <ChatContainer
@@ -293,6 +350,10 @@ export default function App() {
         onStop={handleStop}
         isLoading={isLoading}
         onClearChat={handleClearChat}
+        onNewSession={handleNewSession}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={handleToggleSidebar}
+        isOnline={isOnline}
       />
     </div>
   );

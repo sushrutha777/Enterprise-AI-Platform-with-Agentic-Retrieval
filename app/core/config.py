@@ -35,11 +35,11 @@ class Settings(BaseSettings):
 
     # AI & Embeddings (LiteLLM)
     LLM_PROVIDER: str = "gemini"
-    LLM_MODEL: str = "gemini/gemini-2.5-flash"
+    LLM_MODEL: str = "gemini/gemini-3.1-flash-lite"
     LITELLM_API_BASE: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
     TAVILY_API_KEY: Optional[str] = None
-    EMBEDDING_MODEL: str = "models/text-embedding-004"
+    EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     
     # Voice Input
     GCP_STT_ENABLED: bool = True
@@ -73,5 +73,4 @@ settings = Settings()
 
 # Ensure directories exist
 os.makedirs(settings.QDRANT_PATH, exist_ok=True)
-os.makedirs(settings.FAISS_INDEX_PATH, exist_ok=True)
 os.makedirs(settings.DATA_STORAGE_PATH, exist_ok=True)

@@ -11,7 +11,7 @@
     --text-primary: #ffffff;
     --text-secondary: #a1a1aa;
     --text-muted: #71717a;
-    --accent: #ffffff;
+    --accent: #f59e0b;
   }
 
   body {
@@ -60,7 +60,7 @@
   display: inline-block;
   width: 6px;
   height: 15px;
-  background-color: #818cf8;
+  background-color: #f59e0b;
   margin-left: 2px;
   vertical-align: middle;
   animation: blink 0.8s infinite;
@@ -89,4 +89,16 @@
 
 .prose code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Golden Solar Amber Ambient Background Glow for Empty State */
+.amber-gradient-bg {
+  background: radial-gradient(
+    ellipse 110% 75% at 40% 100%,
+    rgba(217, 119, 6, 0.55) 0%,
+    rgba(180, 83, 9, 0.35) 25%,
+    rgba(120, 53, 15, 0.2) 55%,
+    rgba(30, 12, 3, 0.1) 80%,
+    transparent 100%
+  );
 }

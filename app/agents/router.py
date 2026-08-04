@@ -55,7 +55,7 @@ class AgentRouter:
             "biography", "born", "invented", "founded in", "capital of"
         ]
         if any(w in q_lower for w in wiki_patterns):
-            tools.append("wikipedia")
+            tools.extend(["wikipedia", "web_search"])
             
         # Domain documentation / specific terminology triggers
         doc_patterns = [

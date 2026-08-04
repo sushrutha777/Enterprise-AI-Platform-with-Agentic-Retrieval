@@ -150,11 +150,6 @@ export default function ChatMessage({ message, isStreaming = false }) {
         {isStreaming && <span className="cursor-blink"></span>}
       </div>
 
-      {/* Sources list */}
-      {message.sources && message.sources.length > 0 && (
-        <SourceCitations sources={message.sources} />
-      )}
-
       {/* Bottom actions (Copy & Feedback) */}
       {message.content && !isStreaming && (
         <div className="pt-1 flex items-center gap-2">

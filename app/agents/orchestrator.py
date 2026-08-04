@@ -59,21 +59,6 @@ class AgentOrchestrator:
                 for r in valid_results:
                     sources.extend(r.sources)
                     context_text += f"\n--- From {r.tool_name} ---\n{r.output}\n"
-            else:
-                context_text = "No relevant information found in external sources."
-                
-        # 4. Synthesize
-        yield {"type": "step", "label": "Synthesizing answer..."}
-        
-        history = context_service.format_history_text(session_id)
-        
-        if decision.intent in ["greeting", "casual", "farewell"] or not decision.tools:
-            prompt = DIRECT_RESPONSE_PROMPT.format(history=history, question=rewritten_query)
-        else:
-            prompt = SYNTHESIS_PROMPT.format(context=context_text, history=history, question=rewritten_query)
-            
-        messages = [{"role": "user", "content": prompt}]
-        
         source_type = "hybrid" if len(valid_results) > 1 else (valid_results[0].source_type if valid_results else "direct")
         
         # Emit metadata early
@@ -85,12 +70,38 @@ class AgentOrchestrator:
             "sources": sources,
             "rewritten_query": rewritten_query
         }
-        
-        # Stream LLM tokens
-        full_answer = ""
-        async for token in gateway.stream(messages):
-            full_answer += token
-            yield {"type": "token", "token": token}
+
+        # Fast-path for greetings and farewells (0ms latency, zero LLM overhead)
+        if decision.intent == "greeting":
+            fast_replies = "Hello! How can I help you today?"
+            full_answer = fast_replies
+            for word in fast_replies.split(" "):
+                yield {"type": "token", "token": word + " "}
+                await asyncio.sleep(0.02)
+        elif decision.intent == "farewell":
+            fast_replies = "Goodbye! Feel free to reach out if you have any more questions."
+            full_answer = fast_replies
+            for word in fast_replies.split(" "):
+                yield {"type": "token", "token": word + " "}
+                await asyncio.sleep(0.02)
+        else:
+            # 4. Synthesize with LLM
+            yield {"type": "step", "label": "Synthesizing answer..."}
+            
+            history = context_service.format_history_text(session_id)
+            
+            if decision.intent == "casual" or not decision.tools:
+                prompt = DIRECT_RESPONSE_PROMPT.format(history=history, question=rewritten_query)
+            else:
+                prompt = SYNTHESIS_PROMPT.format(context=context_text, history=history, question=rewritten_query)
+                
+            messages = [{"role": "user", "content": prompt}]
+            
+            # Stream LLM tokens
+            full_answer = ""
+            async for token in gateway.stream(messages):
+                full_answer += token
+                yield {"type": "token", "token": token}
             
         # Update context
         context_service.add_turn(session_id, "user", question)
