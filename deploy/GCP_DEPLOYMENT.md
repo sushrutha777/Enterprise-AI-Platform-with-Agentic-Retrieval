@@ -1,10 +1,10 @@
-# 🚀 Google Cloud Platform (GCP) Deployment Guide
+# Google Cloud Platform (GCP) Deployment Guide
 
-This guide details how to deploy the **Production-Grade Agentic RAG Platform** to **Google Cloud Platform (GCP)** using **Cloud Run**, **Artifact Registry**, and **Secret Manager**.
+This guide details how to deploy the **Enterprise AI Platform with Agentic Retrieval** to **Google Cloud Platform (GCP)** using **Cloud Run**, **Artifact Registry**, and **Secret Manager**.
 
 ---
 
-## 🏛️ GCP Architecture Overview
+## GCP Architecture Overview
 
 ```
                           Internet (HTTPS / Custom Domain)
@@ -31,7 +31,7 @@ This guide details how to deploy the **Production-Grade Agentic RAG Platform** t
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 1. **Google Cloud SDK (`gcloud`)** installed:
    ```bash
@@ -46,9 +46,9 @@ This guide details how to deploy the **Production-Grade Agentic RAG Platform** t
 
 ---
 
-## ⚡ Method 1: Automated 1-Command Deployment
+## Method 1: Automated Script Deployment
 
-We provide preconfigured deployment scripts:
+Preconfigured deployment scripts are provided:
 
 ### On Windows (PowerShell):
 ```powershell
@@ -61,15 +61,15 @@ chmod +x ./deploy/deploy-gcp.sh
 ./deploy/deploy-gcp.sh
 ```
 
-The script will automatically:
-1. Enable `run.googleapis.com`, `artifactregistry.googleapis.com`, and `cloudbuild.googleapis.com`.
-2. Build the unified production container (React + FastAPI) using Google Cloud Build.
-3. Deploy the container to Cloud Run with 2 vCPUs, 2 GB RAM, and auto-scaling.
-4. Output your live HTTPS application URL!
+The script performs the following tasks:
+1. Enables `run.googleapis.com`, `artifactregistry.googleapis.com`, and `cloudbuild.googleapis.com`.
+2. Builds the unified production container (React + FastAPI) using Google Cloud Build.
+3. Deploys the container to Cloud Run with 2 vCPUs, 2 GB RAM, and auto-scaling.
+4. Outputs the live HTTPS application URL.
 
 ---
 
-## 🔐 Method 2: Manual Step-by-Step Deployment
+## Method 2: Step-by-Step Manual Deployment
 
 ### Step 1: Set Project & Enable APIs
 ```bash
@@ -130,7 +130,7 @@ gcloud run deploy agentic-rag-service \
 
 ---
 
-## 🔄 Method 3: Continuous Deployment with GitHub Actions
+## Method 3: Continuous Deployment with GitHub Actions
 
 Add the following GitHub Actions workflow to `.github/workflows/deploy-gcp.yml`:
 
@@ -164,12 +164,12 @@ jobs:
 
 ---
 
-## 💡 Production Best Practices & Cost Optimization
+## Production Best Practices & Cost Optimization
 
 | Feature | Configuration | Benefit |
 | :--- | :--- | :--- |
-| **Scale to Zero** | `--min-instances=0` | **$0 / month** when idle; you only pay when requests arrive. |
-| **Concurrency** | `--concurrency=80` | Allows 1 container instance to handle multiple simultaneous SSE chat streams. |
-| **Timeout** | `--timeout=300s` | Prevents long-running multi-tool agentic reasoning tasks from dropping connection. |
-| **Custom Domain** | Cloud Run Custom Domains | Free Google-managed auto-renewing SSL / TLS certificates. |
-| **Health Check** | `/api/v1/health` | Built-in readiness probe endpoint. |
+| **Scale to Zero** | `--min-instances=0` | Zero infrastructure cost when idle; billing applies only during request execution. |
+| **Concurrency** | `--concurrency=80` | Allows a single container instance to serve multiple concurrent SSE chat streams. |
+| **Timeout** | `--timeout=300s` | Ensures extended multi-tool reasoning sequences complete without connection drops. |
+| **Custom Domain** | Cloud Run Custom Domains | Automated, managed TLS/SSL certificate issuance and renewal. |
+| **Health Check** | `/api/v1/health` | Standardized readiness and liveness probe endpoint. |

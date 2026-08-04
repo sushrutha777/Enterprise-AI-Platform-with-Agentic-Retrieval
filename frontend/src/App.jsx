@@ -258,7 +258,7 @@ export default function App() {
           if (lastIdx >= 0 && next[lastIdx].role === 'assistant') {
             next[lastIdx] = {
               ...next[lastIdx],
-              content: `⚠️ ${err}`,
+              content: `Error: ${err}`,
               stepLabel: null,
             };
           }

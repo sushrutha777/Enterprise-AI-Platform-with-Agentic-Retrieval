@@ -1,9 +1,7 @@
-# ==========================================
-# Multi-stage Production Dockerfile for GCP Cloud Run
-# Builds React Frontend + FastAPI Backend into a single unified container
-# ==========================================
+# Multi-stage Production Dockerfile
+# Builds the React frontend and FastAPI backend into a unified container image.
 
-# --- Stage 1: Build React Frontend ---
+# Stage 1: Build React frontend application
 FROM node:20-alpine AS frontend-builder
 WORKDIR /frontend
 
@@ -13,7 +11,7 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-# --- Stage 2: Python Dependencies Builder ---
+# Stage 2: Install Python runtime dependencies
 FROM python:3.12-slim AS backend-builder
 WORKDIR /app
 
@@ -25,24 +23,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
-# --- Stage 3: Production Runtime ---
+# Stage 3: Prepare final production runtime image
 FROM python:3.12-slim AS runtime
 WORKDIR /app
 
-# Copy Python packages from backend-builder
+# Copy Python packages from builder stage
 COPY --from=backend-builder /root/.local /root/.local
 ENV PATH=/root/.local/bin:$PATH
 
-# Copy backend source code
+# Copy backend application source code
 COPY . /app
 
-# Copy built React frontend assets from frontend-builder
+# Copy compiled React frontend assets
 COPY --from=frontend-builder /frontend/dist /app/frontend/dist
 
 # Ensure persistence directories exist
 RUN mkdir -p /app/data /app/qdrant_data
 
-# Production Environment Variables
+# Production environment configuration
 ENV ENVIRONMENT=production \
     PYTHONUNBUFFERED=1 \
     PORT=8080

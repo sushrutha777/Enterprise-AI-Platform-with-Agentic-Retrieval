@@ -28,7 +28,7 @@ export default function ChatContainer({
         /* Empty State: Pure clean minimalist view */
         <div className="flex-1 flex flex-col items-center justify-center px-4 w-full max-w-3xl mx-auto">
           <h1 className="text-2xl md:text-[28px] font-normal text-white tracking-tight mb-7 text-center">
-            What’s on the agenda today?
+            What's on the agenda today?
           </h1>
 
           <div className="w-full">

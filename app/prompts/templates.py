@@ -5,11 +5,11 @@ CLASSIFIER_PROMPT = """You are an intent classifier and query rewriter for an AI
 Analyze the user's message and respond with ONLY valid JSON (no extra text).
 
 Intent categories:
-  "greeting"  — Hello, Hi, Hey, Good morning, etc.
-  "casual"    — How are you, Who are you, Thank you, Good job, etc.
-  "farewell"  — Bye, Goodbye, See you, etc.
-  "follow_up" — References to previous conversation: Explain more, Give example, Simplify, Continue, Why?, How?, Summarize it, etc.
-  "knowledge" — Questions requiring information: What is X, Explain Y, Who founded Z, etc.
+  "greeting"  - Hello, Hi, Hey, Good morning, etc.
+  "casual"    - How are you, Who are you, Thank you, Good job, etc.
+  "farewell"  - Bye, Goodbye, See you, etc.
+  "follow_up" - References to previous conversation: Explain more, Give example, Simplify, Continue, Why?, How?, Summarize it, etc.
+  "knowledge" - Questions requiring information: What is X, Explain Y, Who founded Z, etc.
 
 Rules:
 1. For follow_up: set needs_retrieval to false if the conversation history contains enough context to answer. Set to true only if external information is needed.

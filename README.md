@@ -1,10 +1,10 @@
-# 🌐 Enterprise AI Platform with Agentic Retrieval
+# Enterprise AI Platform with Agentic Retrieval
 
 An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **LangGraph** reasoning engine, **Hybrid Retrieval (Dense FAISS + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```text
                   ┌───────────────────────────────┐
@@ -38,19 +38,19 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-- **🧠 Autonomous Agentic Routing**: LangGraph orchestrates query classification, contextual query rewriting, and autonomous tool calling.
-- **⚡ Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + FAISS) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
-- **🌊 Real-Time Token Streaming**: Low-latency Server-Sent Events (SSE) stream tokens and reasoning step updates directly to the frontend.
-- **💬 Persistent Multi-Session History**: Conversation management with SQLite / PostgreSQL backend via SQLAlchemy and JWT authentication.
-- **📚 Multi-Source Knowledge Ingestion**: Supports local documents (PDF, TXT, DOCX, Markdown) and direct Website URL crawling.
-- **📊 Interactive Citations & Feedback**: Expandable source attribution citations and user feedback ratings (thumbs up/down).
-- **🐳 Production Ready**: Multi-stage Dockerfiles, `docker-compose.yml`, and GitHub Actions CI/CD workflows.
+- **Autonomous Agentic Routing**: LangGraph orchestrates query classification, contextual query rewriting, and autonomous tool calling.
+- **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + FAISS) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
+- **Real-Time Token Streaming**: Low-latency Server-Sent Events (SSE) stream tokens and reasoning step updates directly to the frontend.
+- **Persistent Multi-Session History**: Conversation management with SQLite / PostgreSQL backend via SQLAlchemy and JWT authentication.
+- **Multi-Source Knowledge Ingestion**: Supports local documents (PDF, TXT, DOCX, Markdown) and direct Website URL crawling.
+- **Interactive Citations & Feedback**: Expandable source attribution citations and user feedback ratings (thumbs up/down).
+- **Production Ready**: Multi-stage Dockerfiles, `docker-compose.yml`, and GitHub Actions CI/CD workflows.
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technologies |
 | :--- | :--- |
@@ -62,7 +62,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 
 ---
 
-## 🏁 Quickstart Guide
+## Quickstart Guide
 
 ### Option 1: Run with Docker Compose (Recommended)
 
@@ -123,7 +123,7 @@ The application will be live at `http://localhost:5173`.
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 ```bash
 # Run pytest suite
@@ -132,7 +132,7 @@ pytest tests/ -v
 
 ---
 
-## 📖 API Documentation
+## API Documentation
 
 Once the backend is running, explore interactive Swagger API docs at `http://127.0.0.1:8000/docs`:
 
@@ -145,9 +145,9 @@ Once the backend is running, explore interactive Swagger API docs at `http://127
 
 ---
 
-## ☁️ Google Cloud Platform (GCP) Deployment
+## Google Cloud Platform (GCP) Deployment
 
-The application is containerized and ready for 1-command deployment to **Google Cloud Run**:
+The application is containerized and ready for deployment to **Google Cloud Run**:
 
 ```powershell
 # Windows PowerShell

@@ -9,6 +9,12 @@ from app.core.config import settings
 from app.core.logging import logger
 
 
+class NullDenseRetriever(BaseRetriever):
+    """Fallback retriever when no embedding provider or API key is configured."""
+    def retrieve(self, query: str, top_k: int = 10):
+        return []
+
+
 def get_default_dense_retriever() -> BaseRetriever:
     """Instantiate configured dense retriever (Qdrant by default in production, FAISS as fallback)."""
     if settings.VECTOR_DB_TYPE.lower() == "qdrant":
@@ -17,9 +23,17 @@ def get_default_dense_retriever() -> BaseRetriever:
             return QdrantRetriever()
         except Exception as e:
             logger.warning(f"Failed to initialize Qdrant ({e}), falling back to FAISS.")
-            return DenseRetriever()
+            try:
+                return DenseRetriever()
+            except Exception as e_faiss:
+                logger.warning(f"Failed to initialize FAISS ({e_faiss}), using NullDenseRetriever.")
+                return NullDenseRetriever()
     else:
-        return DenseRetriever()
+        try:
+            return DenseRetriever()
+        except Exception as e:
+            logger.warning(f"Failed to initialize FAISS ({e}), using NullDenseRetriever.")
+            return NullDenseRetriever()
 
 
 __all__ = [
