@@ -1,0 +1,61 @@
+Frequently Asked Questions (FAQ) - E-Commerce Application
+
+1. Q: How do I create an account?
+A: Click Sign Up, enter your details, verify your email or phone, and log in.
+
+2. Q: How do I reset my password?
+A: Use the Forgot Password option and follow the reset link or OTP.
+
+3. Q: How can I search for products?
+A: Use the search bar or browse categories and filters.
+
+4. Q: Can I add items to a wishlist?
+A: Yes, click the wishlist icon on a product page.
+
+5. Q: How do I add items to my cart?
+A: Click Add to Cart on the desired product.
+
+6. Q: How do I apply a coupon?
+A: Enter the coupon code during checkout before payment.
+
+7. Q: What payment methods are supported?
+A: Credit/debit cards, UPI, net banking, wallets, and COD where available.
+
+8. Q: Is Cash on Delivery available?
+A: COD depends on product and delivery location.
+
+9. Q: How can I track my order?
+A: Open My Orders and select the order to view tracking updates.
+
+10. Q: Can I cancel my order?
+A: Orders can usually be canceled before shipment.
+
+11. Q: How do returns work?
+A: Initiate a return from My Orders within the eligible return window.
+
+12. Q: When will I receive my refund?
+A: Refunds are typically processed within 3–10 business days after approval.
+
+13. Q: How do I contact customer support?
+A: Use in-app chat, email, or the support phone number.
+
+14. Q: Why was my payment declined?
+A: Check card details, account balance, bank restrictions, or try another payment method.
+
+15. Q: How do I change my delivery address?
+A: Update the address before the order is shipped.
+
+16. Q: Are my personal details secure?
+A: Reputable platforms use encryption and secure payment gateways.
+
+17. Q: Can I review purchased products?
+A: Yes, after successful delivery you can submit ratings and reviews.
+
+18. Q: How do I check product availability?
+A: Availability is shown on each product page.
+
+19. Q: What happens if my order is delayed?
+A: You will receive tracking updates; contact support if the delay is significant.
+
+20. Q: How do I delete my account?
+A: Go to Account Settings or contact customer support for account deletion.
