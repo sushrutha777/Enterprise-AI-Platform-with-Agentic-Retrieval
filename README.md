@@ -1,6 +1,6 @@
 # Enterprise AI Platform with Agentic Retrieval
 
-An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **LangGraph** reasoning engine, **Hybrid Retrieval (Dense FAISS + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
+An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **async Python orchestrator**, **Hybrid Retrieval (Dense Qdrant/FAISS + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, a pluggable **Knowledge Ingestion Platform**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
 
 ---
 
@@ -19,18 +19,18 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                   └──────────────┬────────────────┘
                                  │
                   ┌──────────────▼────────────────┐
-                  │    LangGraph StateGraph       │
+                  │   Async Agent Orchestrator    │
                   └──────┬─────────────────┬──────┘
                          │                 │
               [Direct Chat]                [Knowledge / Complex Query]
                          │                 │
                          ▼                 ▼
-                 Gemini Direct      ReAct Reasoning Agent
+                 Gemini Direct      Parallel Tool Execution
                                            │
                          ┌─────────────────┼─────────────────┐
                          ▼                 ▼                 ▼
                  Hybrid Retriever     Wikipedia API    Tavily Web Search
-                 (FAISS + BM25)
+               (Qdrant/FAISS + BM25)
                          │
                          ▼
                  FlashRank Reranker
@@ -40,13 +40,12 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 
 ## Key Features
 
-- **Autonomous Agentic Routing**: LangGraph orchestrates query classification, contextual query rewriting, and autonomous tool calling.
-- **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + FAISS) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
+- **Autonomous Agentic Routing**: A custom rule-and-LLM-based routing engine classifies intent, rewrites queries contextually, and executes parallel tool-calling workflows.
+- **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + Qdrant/FAISS) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
+- **Pluggable Knowledge Ingestion Platform**: A modular ingestion pipeline (`ingestion_platform/`) with clean abstractions for Connectors (PDF, TXT) and Pipeline Stages (Cleaning, Semantic Chunking, Gemini Embedding, Indexing).
 - **Real-Time Token Streaming**: Low-latency Server-Sent Events (SSE) stream tokens and reasoning step updates directly to the frontend.
-- **Persistent Multi-Session History**: Conversation management with SQLite / PostgreSQL backend via SQLAlchemy and JWT authentication.
-- **Multi-Source Knowledge Ingestion**: Supports local documents (PDF, TXT, DOCX, Markdown) and direct Website URL crawling.
-- **Interactive Citations & Feedback**: Expandable source attribution citations and user feedback ratings (thumbs up/down).
-- **Production Ready**: Multi-stage Dockerfiles, `docker-compose.yml`, and GitHub Actions CI/CD workflows.
+- **Interactive Citations**: Expandable source attribution citations for retrieved documents.
+- **Production Ready**: Multi-stage Dockerfiles, `docker-compose.yml`, Google Cloud Run deployment integration, and Google Cloud Build CI/CD automation.
 
 ---
 
@@ -55,10 +54,10 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 | Layer | Technologies |
 | :--- | :--- |
 | **Frontend** | React 19, Vite, TailwindCSS v4, Lucide React, React Markdown, Remark GFM |
-| **Backend API** | FastAPI, Pydantic v2, SQLAlchemy, Uvicorn, Python 3.12 |
-| **AI / Orchestration** | LangGraph, LangChain, Google Gemini (`gemini-flash-latest`), Tavily API |
-| **Search & Indexing** | FAISS, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
-| **DevOps & CI/CD** | Docker, Docker Compose, GitHub Actions, Pytest |
+| **Backend API** | FastAPI, Pydantic v2, Uvicorn, Python 3.12 |
+| **AI / Orchestration** | LangChain, Google Gemini (`gemini-3.1-flash-lite`), Tavily API |
+| **Search & Indexing** | Qdrant Vector Database, FAISS, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
+| **DevOps & CI/CD** | Docker, Docker Compose, Google Cloud Build, Pytest |
 
 ---
 
@@ -76,15 +75,15 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
    ```env
    GOOGLE_API_KEY=your_gemini_api_key_here
    TAVILY_API_KEY=your_tavily_api_key_optional
-   JWT_SECRET=your_secret_key
    ```
 
-3. Launch all services:
+3. Launch all services (starts Qdrant, backend, and frontend):
    ```bash
    docker-compose up --build
    ```
    - **Frontend UI**: [http://localhost:3000](http://localhost:3000)
    - **Backend API & Swagger**: [http://localhost:8000/docs](http://localhost:8000/docs)
+   - **Qdrant Dashboard**: [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
 
 ---
 
@@ -123,6 +122,34 @@ The application will be live at `http://localhost:5173`.
 
 ---
 
+## Knowledge Ingestion Platform
+
+The project includes a robust, independent **Knowledge Ingestion Platform** under [ingestion_platform/](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/ingestion_platform). This modular platform processes local files and updates the Qdrant vector database.
+
+### Ingestion Pipeline Architecture
+- **Connectors**: Extract raw content (e.g., [PDFConnector](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/ingestion_platform/connectors/pdf.py), [TextConnector](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/ingestion_platform/connectors/text.py)).
+- **Stages**:
+  - **DocumentCleaner**: Text sanitization and metadata normalization.
+  - **SemanticChunker**: Intelligent chunking of text using semantic boundaries.
+  - **GeminiEmbedder**: Generates high-quality vectors using Gemini embeddings.
+  - **QdrantIndexer**: Connects to the Qdrant database, manages collections, and uploads vector embeddings.
+
+### How to run ingestion:
+You can run the ingestion CLI either via the root helper script or the module directly:
+
+```bash
+# Index files from directory (default: ./data)
+python ingest.py --source ./data
+
+# Re-index from scratch (drops existing Qdrant collection)
+python ingest.py --source ./data --reindex
+
+# Run using the modular CLI entrypoint
+python -m ingestion_platform.cli ./data
+```
+
+---
+
 ## Running Tests
 
 ```bash
@@ -137,11 +164,8 @@ pytest tests/ -v
 Once the backend is running, explore interactive Swagger API docs at `http://127.0.0.1:8000/docs`:
 
 - `POST /api/v1/chat/stream`: SSE Streaming endpoint for LangGraph RAG.
-- `GET /api/v1/conversations`: List and manage chat sessions.
-- `POST /api/v1/documents/upload`: Ingest and index PDF/TXT/DOCX documents.
-- `POST /api/v1/documents/upload-url`: Ingest and index website URLs.
-- `POST /api/v1/auth/register` & `POST /api/v1/auth/login`: JWT user authentication.
-- `POST /api/v1/feedback`: Submit user ratings for model responses.
+- `GET /api/v1/health/ready`: Readiness check for API and LLM configurations.
+- `POST /api/v1/voice/transcribe`: Transcribe voice inputs (Speech-to-Text).
 
 ---
 
@@ -159,5 +183,5 @@ The application is containerized and ready for deployment to **Google Cloud Run*
 ./deploy/deploy-gcp.sh
 ```
 
-For complete step-by-step configuration including Secret Manager, Cloud Build, and CI/CD automation, see [GCP Deployment Guide](file:///deploy/GCP_DEPLOYMENT.md).
+For complete step-by-step configuration including Secret Manager, Cloud Build, and CI/CD automation, see [GCP Deployment Guide](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/deploy/GCP_DEPLOYMENT.md).
 
