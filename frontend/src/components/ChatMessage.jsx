@@ -37,8 +37,7 @@ export default function ChatMessage({ message, isStreaming = false }) {
   };
 
   const renderToolBadge = () => {
-    const tool = message.tool_used || message.source_type;
-    if (!tool || tool === 'none' || tool === 'direct_chat') return null;
+    return null;
 
     if (tool === 'document_search' || tool === 'retriever' || tool === 'document') {
       return (
@@ -99,7 +98,7 @@ export default function ChatMessage({ message, isStreaming = false }) {
         )}
 
         {message.stepLabel && isStreaming && (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-neutral-800 text-neutral-300 border border-neutral-700 animate-pulse">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-neutral-300 animate-pulse">
             <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
             {message.stepLabel}
           </span>

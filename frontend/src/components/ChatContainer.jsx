@@ -47,34 +47,29 @@ export default function ChatContainer({
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Subtle App Branding */}
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#121212] border border-neutral-800/80 text-[12px] text-neutral-300 font-medium select-none">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Agentic RAG</span>
+          {/* App Branding */}
+          <div className="hidden sm:flex items-center select-none ml-2">
+            <span className="text-[14px] font-bold tracking-wide bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
+              Agentic RAG
+            </span>
+            <span className="text-[13px] font-medium text-neutral-400 ml-2">
+              Web, Wiki, Document
+            </span>
           </div>
         </div>
 
         {/* Right Side: Online Status */}
         <div className="flex items-center gap-3">
-          {messages.length > 0 && (
-            <button
-              onClick={onClearChat}
-              className="p-2 rounded-xl text-neutral-400 hover:text-rose-400 hover:bg-[#1a1a1a] transition-colors border border-transparent hover:border-neutral-800 text-xs flex items-center gap-1.5"
-              title="Clear current messages"
-            >
-              <Trash2 className="w-4 h-4" />
-              <span className="hidden sm:inline">Clear</span>
-            </button>
-          )}
+
 
           {/* Status Indicator */}
           {isOnline ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/40 border border-emerald-800/40 text-[11px] text-emerald-400 font-medium select-none">
+            <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Online</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-950/40 border border-rose-800/40 text-[11px] text-rose-400 font-medium select-none" title="Backend is offline">
+            <div className="flex items-center gap-1.5 text-[11px] text-rose-400 font-medium select-none" title="Backend is offline">
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
               <span>Offline</span>
             </div>

@@ -27,7 +27,12 @@ def liveness_check():
 def readiness_check():
     """Kubernetes readiness probe."""
     # Check essential configs
-    has_llm = bool(settings.LITELLM_API_BASE or settings.GOOGLE_API_KEY or os.getenv("GEMINI_API_KEY"))
+    has_llm = bool(
+        settings.LITELLM_API_BASE 
+        or settings.GOOGLE_API_KEY 
+        or os.getenv("GEMINI_API_KEY") 
+        or os.getenv("GOOGLE_API_KEY")
+    )
     if not has_llm:
         return {"status": "not_ready", "reason": "Missing LLM configuration"}
     return {"status": "ready"}
