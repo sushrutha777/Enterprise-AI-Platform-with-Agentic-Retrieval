@@ -29,8 +29,8 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                                            │
                          ┌─────────────────┼─────────────────┐
                          ▼                 ▼                 ▼
-                 Hybrid Retriever     Wikipedia API    Tavily Web Search
-               (Qdrant/FAISS + BM25)
+                 Hybrid Retriever     Wikipedia API   DuckDuckGo / Tavily
+               (Qdrant/FAISS + BM25)                     Web Search
                          │
                          ▼
                  FlashRank Reranker
@@ -55,7 +55,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 | :--- | :--- |
 | **Frontend** | React 19, Vite, TailwindCSS v4, Lucide React, React Markdown, Remark GFM |
 | **Backend API** | FastAPI, Pydantic v2, Uvicorn, Python 3.12 |
-| **AI / Orchestration** | LangChain, Google Gemini (`gemini-3.1-flash-lite`), Tavily API |
+| **AI / Orchestration** | LangChain, Google Gemini (`gemini-3.1-flash-lite`), DuckDuckGo, Tavily API |
 | **Search & Indexing** | Qdrant Vector Database, FAISS, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
 | **DevOps & CI/CD** | Docker, Docker Compose, Google Cloud Build, Pytest |
 
