@@ -90,13 +90,6 @@ export default function ChatMessage({ message, isStreaming = false }) {
       <div className="flex items-center gap-2 flex-wrap text-xs">
         {renderToolBadge()}
 
-        {message.latency_seconds && (
-          <span className="inline-flex items-center gap-1 text-[11px] text-neutral-400">
-            <Clock className="w-3 h-3" />
-            {message.latency_seconds}s
-          </span>
-        )}
-
         {message.stepLabel && isStreaming && (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-neutral-300 animate-pulse">
             <span className="w-1.5 h-1.5 rounded-full bg-white"></span>

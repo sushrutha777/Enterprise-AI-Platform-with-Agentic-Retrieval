@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     LITELLM_API_BASE: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
     TAVILY_API_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     
     # Voice Input

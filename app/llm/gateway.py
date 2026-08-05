@@ -20,6 +20,8 @@ class LLMGateway:
         # Set keys in environment for LiteLLM to pick up automatically
         if settings.GOOGLE_API_KEY:
             os.environ["GEMINI_API_KEY"] = settings.GOOGLE_API_KEY
+        if getattr(settings, "GROQ_API_KEY", None):
+            os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 
     async def stream(self, messages: List[Dict[str, str]], **kwargs) -> AsyncGenerator[str, None]:
         """Stream response tokens back."""
@@ -30,6 +32,7 @@ class LLMGateway:
                 api_base=self.api_base,
                 stream=True,
                 num_retries=3,
+                fallbacks=["groq/llama3-8b-8192"],
                 **kwargs
             )
             async for chunk in response:
@@ -48,6 +51,7 @@ class LLMGateway:
                 messages=messages,
                 api_base=self.api_base,
                 num_retries=3,
+                fallbacks=["groq/llama3-8b-8192"],
                 **kwargs
             )
             return response.choices[0].message.content or ""

@@ -1,6 +1,6 @@
 # Enterprise AI Platform with Agentic Retrieval
 
-An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **async Python orchestrator**, **Hybrid Retrieval (Dense Qdrant/FAISS + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, a pluggable **Knowledge Ingestion Platform**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
+An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **async Python orchestrator**, **Hybrid Retrieval (Dense Qdrant + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, a pluggable **Knowledge Ingestion Platform**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
 
 ---
 
@@ -30,7 +30,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                          ┌─────────────────┼─────────────────┐
                          ▼                 ▼                 ▼
                  Hybrid Retriever     Wikipedia API   DuckDuckGo / Tavily
-               (Qdrant/FAISS + BM25)                     Web Search
+               (Qdrant + BM25)                           Web Search
                          │
                          ▼
                  FlashRank Reranker
@@ -41,7 +41,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 ## Key Features
 
 - **Autonomous Agentic Routing**: A custom rule-and-LLM-based routing engine classifies intent, rewrites queries contextually, and executes parallel tool-calling workflows.
-- **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + Qdrant/FAISS) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
+- **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + Qdrant) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
 - **Pluggable Knowledge Ingestion Platform**: A modular ingestion pipeline (`ingestion_platform/`) with clean abstractions for Connectors (PDF, TXT) and Pipeline Stages (Cleaning, Semantic Chunking, Gemini Embedding, Indexing).
 - **Real-Time Token Streaming**: Low-latency Server-Sent Events (SSE) stream tokens and reasoning step updates directly to the frontend.
 - **Interactive Citations**: Expandable source attribution citations for retrieved documents.
@@ -56,7 +56,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 | **Frontend** | React 19, Vite, TailwindCSS v4, Lucide React, React Markdown, Remark GFM |
 | **Backend API** | FastAPI, Pydantic v2, Uvicorn, Python 3.12 |
 | **AI / Orchestration** | LangChain, Google Gemini (`gemini-3.1-flash-lite`), DuckDuckGo, Tavily API |
-| **Search & Indexing** | Qdrant Vector Database, FAISS, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
+| **Search & Indexing** | Qdrant Vector Database, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
 | **DevOps & CI/CD** | Docker, Docker Compose, Google Cloud Build, Pytest |
 
 ---
@@ -71,19 +71,45 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
    cd Enterprise-AI-Platform-with-Agentic-Retrieval
    ```
 
-2. Create a `.env` file in the root directory:
+2. Create a `.env` file in the root directory. Here is a complete template of what you can configure:
    ```env
+   # --- Primary AI Model & API Keys ---
    GOOGLE_API_KEY=your_gemini_api_key_here
    TAVILY_API_KEY=your_tavily_api_key_optional
+   GROQ_API_KEY=your_groq_api_key_optional
+   
+   # --- Model Selection ---
+   LLM_MODEL=gemini/gemini-3.1-flash-lite
+   EMBEDDING_MODEL=models/gemini-embedding-001
+   
+   # --- AI Gateway Configuration ---
+   # Leave blank for Embedded Gateway. Set to URL (e.g. http://localhost:4000) for Standalone Proxy.
+   LITELLM_API_BASE=
+   
+   # --- Vector Database (Qdrant) ---
+   VECTOR_DB_TYPE=qdrant
+   QDRANT_COLLECTION_NAME=agentic_rag_documents
+   QDRANT_URL=https://your-cluster-id.cloud.qdrant.io
+   QDRANT_API_KEY=your_qdrant_api_key
+   
+   # --- Retrieval Tuning ---
+   RETRIEVAL_TOP_K=5
+   RERANKED_TOP_K=5
+   USE_HYBRID_SEARCH=true
+   USE_RERANKER=false
+   
+   # --- Application Environment ---
+   ENVIRONMENT=development
+   DEBUG=false
+   LOG_LEVEL=INFO
    ```
 
-3. Launch all services (starts Qdrant, backend, and frontend):
+3. Launch all services (starts backend API and frontend):
    ```bash
    docker-compose up --build
    ```
    - **Frontend UI**: [http://localhost:3000](http://localhost:3000)
    - **Backend API & Swagger**: [http://localhost:8000/docs](http://localhost:8000/docs)
-   - **Qdrant Dashboard**: [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
 
 ---
 
@@ -183,5 +209,5 @@ The application is containerized and ready for deployment to **Google Cloud Run*
 ./deploy/deploy-gcp.sh
 ```
 
-For complete step-by-step configuration including Secret Manager, Cloud Build, and CI/CD automation, see [GCP Deployment Guide](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/deploy/GCP_DEPLOYMENT.md).
+For complete step-by-step configuration including **Google Cloud Secret Manager** (for securely injecting API keys like `QDRANT_API_KEY`), Cloud Build, and CI/CD automation, see [GCP Deployment Guide](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/deploy/GCP_DEPLOYMENT.md).
 
