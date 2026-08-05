@@ -22,15 +22,15 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                   │   Async Agent Orchestrator    │
                   └──────┬─────────────────┬──────┘
                          │                 │
-              [Direct Chat]                [Knowledge / Complex Query]
+                  [Direct Chat]     [Knowledge / Complex Query]
                          │                 │
                          ▼                 ▼
-                 Gemini Direct      Parallel Tool Execution
+                   Gemini Direct     Parallel Tool Execution
                                            │
                          ┌─────────────────┼─────────────────┐
                          ▼                 ▼                 ▼
-                 Hybrid Retriever     Wikipedia API   DuckDuckGo / Tavily
-               (Qdrant + BM25)                           Web Search
+                 Hybrid Retriever     Wikipedia API     Tavily / DuckDuckGo  
+                 (Qdrant + BM25)                           Web Search
                          │
                          ▼
                  FlashRank Reranker
