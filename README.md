@@ -73,32 +73,32 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 
 2. Create a `.env` file in the root directory. Here is a complete template of what you can configure:
    ```env
-   # --- Primary AI Model & API Keys ---
+   # Primary AI Model and API Keys
    GOOGLE_API_KEY=your_gemini_api_key_here
    TAVILY_API_KEY=your_tavily_api_key_optional
    GROQ_API_KEY=your_groq_api_key_optional
    
-   # --- Model Selection ---
+   # Model Selection
    LLM_MODEL=gemini/gemini-3.1-flash-lite
    EMBEDDING_MODEL=models/gemini-embedding-001
    
-   # --- AI Gateway Configuration ---
+   # AI Gateway Configuration
    # Leave blank for Embedded Gateway. Set to URL (e.g. http://localhost:4000) for Standalone Proxy.
    LITELLM_API_BASE=
    
-   # --- Vector Database (Qdrant) ---
+   # Vector Database (Qdrant) Configuration
    VECTOR_DB_TYPE=qdrant
    QDRANT_COLLECTION_NAME=agentic_rag_documents
    QDRANT_URL=https://your-cluster-id.cloud.qdrant.io
    QDRANT_API_KEY=your_qdrant_api_key
    
-   # --- Retrieval Tuning ---
+   # Retrieval Tuning Settings
    RETRIEVAL_TOP_K=5
    RERANKED_TOP_K=5
    USE_HYBRID_SEARCH=true
-   USE_RERANKER=false
+   USE_RERANKER=true
    
-   # --- Application Environment ---
+   # Application Environment
    ENVIRONMENT=development
    DEBUG=false
    LOG_LEVEL=INFO
