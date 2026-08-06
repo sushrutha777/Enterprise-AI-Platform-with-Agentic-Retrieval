@@ -42,7 +42,7 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                 │                                                    ┌──────────────────┼──────────────────┐
                 │                                                    ▼                  ▼                  ▼
                 │                                           ┌─────────────────┐ ┌───────────────┐ ┌─────────────────┐
-                │                                           │  Hybrid Search  │ │    Wikipedia  │ │ Tavily / DDG    │
+                │                                           │  Hybrid Search  │ │ Wikipedia API │ │ Tavily / DDG    │
                 │                                           │ (Qdrant + BM25) │ └───────┬───────┘ │ Web Search      │
                 │                                           └────────┬────────┘         │         └────────┬────────┘
                 │                                                    │                  │                  │

@@ -35,4 +35,3 @@ jobs:
           QDRANT_URL: "http://localhost:6333"
         run: |
           pytest tests/ -v --tb=short
-
