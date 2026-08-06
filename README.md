@@ -32,12 +32,12 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                   [Direct Chat]     [Knowledge / Complex Query]
                          │                 │
                          ▼                 ▼
-               ┌───────────────────┐  Parallel Tool Execution
-               │ Primary: Gemini   │       │
-               │ Fallback: Groq    │ ┌─────┼─────────────┐
-               └───────────────────┘ ▼     ▼             ▼
-                           Hybrid Retriever Wikipedia  Tavily / DDG
-                           (Qdrant + BM25)             Web Search
+                   Gemini Direct     Parallel Tool Execution
+                                           │
+                         ┌─────────────────┼─────────────────┐
+                         ▼                 ▼                 ▼
+                 Hybrid Retriever     Wikipedia API     Tavily / DuckDuckGo  
+                 (Qdrant + BM25)                           Web Search
                                  │
                                  ▼
                          FlashRank Reranker
