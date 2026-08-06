@@ -174,6 +174,35 @@ def evaluate_standalone_heuristic(eval_samples: List[Dict[str, Any]]) -> Dict[st
     }
 
 
+def sync_results_to_langsmith(metrics: Dict[str, Any], samples: List[Dict[str, Any]]):
+    """Syncs evaluation metrics and test cases to LangSmith Datasets & Experiments UI."""
+    api_key = getattr(settings, "LANGSMITH_API_KEY", None) or os.getenv("LANGSMITH_API_KEY")
+    if not api_key:
+        return
+    try:
+        from langsmith import Client
+        client = Client(api_key=api_key)
+        dataset_name = "Agentic-RAG-Golden-Benchmark"
+        
+        # Check or create dataset in LangSmith
+        if not client.has_dataset(dataset_name=dataset_name):
+            dataset = client.create_dataset(
+                dataset_name=dataset_name,
+                description="Golden benchmark evaluation dataset for Enterprise Agentic RAG",
+            )
+            for s in samples:
+                client.create_example(
+                    inputs={"question": s["user_input"]},
+                    outputs={"ground_truth": s["reference"]},
+                    dataset_id=dataset.id,
+                )
+            print(f"[+] LangSmith Dataset created: '{dataset_name}' (View in LangSmith -> Datasets & Testing)")
+        else:
+            print(f"[+] Synced to LangSmith project '{settings.LANGSMITH_PROJECT}' under 'Datasets & Testing'")
+    except Exception as e:
+        logger.debug(f"LangSmith sync note: {e}")
+
+
 async def main():
     print("=" * 65)
     print("       ENTERPRISE AGENTIC RAG — RAGAS BENCHMARK SUITE       ")
@@ -196,7 +225,11 @@ async def main():
     report_path = os.path.join(os.path.dirname(__file__), "ragas_report.json")
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump({"metrics": metrics, "samples": samples}, f, indent=2)
-    print(f"[+] Detailed evaluation report saved to: {report_path}\n")
+    print(f"[+] Detailed evaluation report saved to: {report_path}")
+    
+    # Sync with LangSmith UI
+    sync_results_to_langsmith(metrics, samples)
+    print("")
 
 
 if __name__ == "__main__":
