@@ -386,7 +386,23 @@ Once the backend is running, explore interactive Swagger API docs at `http://127
 
 ## Google Cloud Platform (GCP) Deployment
 
-The application is containerized and ready for deployment to **Google Cloud Run**:
+The application is fully containerized and includes automated CI/CD pipelines via `cloudbuild.yaml`. When deployed to GCP, the infrastructure is organized as follows:
+
+* **Artifact Registry**: Stores the built, production-ready Docker container images.
+* **Secret Manager**: Securely stores all sensitive environment variables and API keys. These are injected into the application dynamically at runtime. The required/optional secrets include:
+  * `GOOGLE_API_KEY`: Primary LLM and Embeddings API key.
+  * `GROQ_API_KEY`: Fallback LLM API key for high availability.
+  * `TAVILY_API_KEY`: Required for the web search agent tool.
+  * `QDRANT_API_KEY`: Required for authenticating with the Qdrant Cloud vector database.
+  * `OPENAI_API_KEY` / `ANTHROPIC_API_KEY`: (Optional) If using alternate LLM providers.
+  * `LANGSMITH_API_KEY`: (Optional) For production observability and execution tracing.
+* **Cloud Run**: Hosts the containerized application in a fully managed, serverless environment with auto-scaling capabilities. Non-secret configurations are passed as standard environment variables directly to the Cloud Run service, such as:
+  * `ENVIRONMENT`: (e.g., `production`).
+  * `LLM_MODEL` / `EMBEDDING_MODEL`: To specify the active AI models.
+  * `QDRANT_URL` / `VECTOR_DB_TYPE`: Vector database connection settings.
+  * `USE_HYBRID_SEARCH` / `USE_RERANKER`: Feature flags for the retrieval pipeline.
+
+To deploy the application:
 
 ```powershell
 # Windows PowerShell
@@ -398,5 +414,4 @@ The application is containerized and ready for deployment to **Google Cloud Run*
 ./deploy/deploy-gcp.sh
 ```
 
-For complete step-by-step configuration including **Google Cloud Secret Manager** (for securely injecting API keys like `QDRANT_API_KEY`), Cloud Build, and CI/CD automation, see [GCP Deployment Guide](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/deploy/GCP_DEPLOYMENT.md).
-
+For complete step-by-step configuration, see the [GCP Deployment Guide](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/deploy/GCP_DEPLOYMENT.md).
