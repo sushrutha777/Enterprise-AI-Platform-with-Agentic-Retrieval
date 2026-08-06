@@ -123,6 +123,11 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
     ENVIRONMENT=development
     DEBUG=false
     LOG_LEVEL=INFO
+
+    LANGSMITH_TRACING=true
+    LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+    LANGSMITH_API_KEY=lsv2_pt_your_api_key_here
+    LANGSMITH_PROJECT="Agentic RAG"
     ```
 
 3. Launch all services (starts backend API and frontend):

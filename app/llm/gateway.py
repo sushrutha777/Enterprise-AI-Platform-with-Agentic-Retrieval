@@ -27,6 +27,24 @@ class LLMGateway:
         if getattr(settings, "GROQ_API_KEY", None):
             os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 
+        # LangSmith Tracing & Observability
+        langsmith_key = getattr(settings, "LANGSMITH_API_KEY", None) or getattr(settings, "LANGCHAIN_API_KEY", None)
+        if langsmith_key:
+            os.environ["LANGSMITH_API_KEY"] = langsmith_key
+            os.environ["LANGCHAIN_API_KEY"] = langsmith_key
+            proj = getattr(settings, "LANGSMITH_PROJECT", None) or getattr(settings, "LANGCHAIN_PROJECT", None) or "Agentic RAG"
+            os.environ["LANGSMITH_PROJECT"] = proj
+            os.environ["LANGCHAIN_PROJECT"] = proj
+            endpoint = getattr(settings, "LANGSMITH_ENDPOINT", None) or getattr(settings, "LANGCHAIN_ENDPOINT", None) or "https://api.smith.langchain.com"
+            os.environ["LANGSMITH_ENDPOINT"] = endpoint
+            os.environ["LANGCHAIN_ENDPOINT"] = endpoint
+            os.environ["LANGSMITH_TRACING"] = "true"
+            os.environ["LANGCHAIN_TRACING_V2"] = "true"
+            if not hasattr(litellm, "success_callback") or litellm.success_callback is None:
+                litellm.success_callback = []
+            if "langsmith" not in litellm.success_callback:
+                litellm.success_callback.append("langsmith")
+
     async def stream(self, messages: List[Dict[str, str]], **kwargs) -> AsyncGenerator[str, None]:
         """Stream response tokens back."""
         try:

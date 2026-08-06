@@ -1,17 +1,17 @@
 {
   "metrics": {
-    "faithfulness": 0.7874,
+    "faithfulness": 0.8132,
     "answer_relevancy": 0.92,
     "context_precision": 0.88,
     "context_recall": 0.9,
-    "average_latency_sec": 3.315,
+    "average_latency_sec": 3.223,
     "evaluation_mode": "heuristic_baseline"
   },
   "samples": [
     {
       "user_input": "What is the return policy for electronics?",
       "reference": "Electronics can be returned within 30 days of purchase provided they are in original packaging and condition with receipt.",
-      "response": "The provided documents do not specify a unique return policy for electronics. However, the general policy for returns is as follows:\n\n*   **Eligibility:** Eligible products can be returned within a specified return window.\n*   **Process:** You can initiate a return by going to **My Orders** within the eligible window.\n*   **Refunds:** Once the returned items have been successfully inspected, refunds are typically processed within 3\u201310 business days after approval.",
+      "response": "The provided documents do not specify a unique return policy for electronics. However, the general policy for returns is as follows:\n\n*   **Eligibility:** Eligible products can be returned within a specified return window.\n*   **Process:** You can initiate a return through the \"My Orders\" section of your account.\n*   **Refunds:** Once the returned item has been successfully inspected, refunds are typically processed within 3\u201310 business days after approval.",
       "retrieved_contexts": [
         ". 8. Q: Is Cash on Delivery available? A: COD depends on product and delivery location. 9. Q: How can I track my order? A: Open My Orders and select the order to view tracking updates. 10. Q: Can I cancel my order? A: Orders can usually be canceled before shipment. 11. Q: How do returns work? A: Initiate a return from My Orders within the eligible return window. 12. Q: When will I receive my refund? A: Refunds are typically processed within 3\u00e2\u20ac\u201c10 business days after approval. 13. Q: How do I contact customer support? A: Use in-app chat, email, or the support phone number. 14. Q: Why was my payment declined? A: Check card details, account balance, bank restrictions, or try another payment method. 15. Q: How do I change my delivery address? A: Update the address before the order is shipped. 16. Q: Are my personal details secure? A: Reputable platforms use encryption and secure payment gateways. 17",
         "11. Customer Support Support requests are handled through email, chat, or phone during business hours. 12. Intellectual Property All website content, logos, trademarks, and software remain the property of the company unless otherwise stated. 13. Compliance The company complies with applicable consumer protection, privacy, and e-commerce regulations. 14. Policy Updates Policies may be updated periodically. Continued use of the platform constitutes acceptance of the revised policy.",
@@ -20,14 +20,14 @@
         ". 16. Q: Are my personal details secure? A: Reputable platforms use encryption and secure payment gateways. 17. Q: Can I review purchased products? A: Yes, after successful delivery you can submit ratings and reviews. 18. Q: How do I check product availability? A: Availability is shown on each product page. 19. Q: What happens if my order is delayed? A: You will receive tracking updates; contact support if the delay is significant. 20. Q: How do I delete my account? A: Go to Account Settings or contact customer support for account deletion."
       ],
       "intent": "knowledge",
-      "latency_retrieval_sec": 1.469,
-      "latency_generation_sec": 2.8,
-      "latency_total_sec": 4.269
+      "latency_retrieval_sec": 1.558,
+      "latency_generation_sec": 2.454,
+      "latency_total_sec": 4.012
     },
     {
       "user_input": "How long does standard shipping take?",
       "reference": "Standard shipping typically takes 3-5 business days within the continental US.",
-      "response": "The provided documents do not specify a fixed timeframe for standard shipping. Estimated delivery times are provided for convenience and may vary [1, 2]. You can monitor your order's progress by tracking your shipment once it has been dispatched [1, 4].",
+      "response": "The provided documents do not specify a fixed timeframe for standard shipping. According to the policy, estimated delivery times are provided for convenience and may vary [1, 2]. You will receive tracking information once your order has been dispatched [1, 2].",
       "retrieved_contexts": [
         ". 5. Shipping and Delivery Estimated delivery times are provided for convenience and may vary. Customers receive tracking information after dispatch. 6. Returns and Refunds Eligible products may be returned within the specified return window. Refunds are processed after successful inspection of returned items. 7. Privacy Customer personal data is collected only for business purposes such as order processing, customer support, and legal compliance. 8. Security The platform uses encryption, authentication, and access controls to protect customer data and prevent unauthorized access. 9. Acceptable Use Users must not misuse the platform, attempt unauthorized access, upload malicious content, or engage in fraudulent activities. 10. Product Information Product descriptions and images are provided as accurately as possible. Minor variations may occur.",
         "E-Commerce Company Policy This sample policy document is intended as a general internal policy template for an e-commerce business. 1. Purpose This policy defines the standards for operating the e-commerce platform, protecting customer information, and ensuring secure, reliable, and compliant business operations. 2. Customer Accounts Customers must provide accurate information. Accounts are personal and users are responsible for maintaining password confidentiality. 3. Orders Orders are subject to product availability and payment verification. The company may cancel orders involving pricing errors, suspected fraud, or stock issues. 4. Payments Payments are processed through secure payment gateways. Sensitive payment information is not stored unless required by law or an approved payment provider. 5. Shipping and Delivery Estimated delivery times are provided for convenience and may vary. Customers receive tracking information after dispatch. 6",
@@ -36,14 +36,14 @@
         "11. Customer Support Support requests are handled through email, chat, or phone during business hours. 12. Intellectual Property All website content, logos, trademarks, and software remain the property of the company unless otherwise stated. 13. Compliance The company complies with applicable consumer protection, privacy, and e-commerce regulations. 14. Policy Updates Policies may be updated periodically. Continued use of the platform constitutes acceptance of the revised policy."
       ],
       "intent": "knowledge",
-      "latency_retrieval_sec": 0.891,
-      "latency_generation_sec": 1.996,
-      "latency_total_sec": 2.887
+      "latency_retrieval_sec": 0.774,
+      "latency_generation_sec": 2.106,
+      "latency_total_sec": 2.88
     },
     {
       "user_input": "What payment methods are accepted?",
       "reference": "We accept major credit cards (Visa, MasterCard, Amex), PayPal, Apple Pay, and Google Pay.",
-      "response": "The supported payment methods are:\n\n*   Credit/debit cards\n*   UPI\n*   Net banking\n*   Wallets\n*   Cash on Delivery (COD), where available",
+      "response": "The supported payment methods include:\n\n*   Credit/debit cards\n*   UPI\n*   Net banking\n*   Wallets\n*   Cash on Delivery (COD) \u2014 *Availability depends on the specific product and delivery location.*",
       "retrieved_contexts": [
         "Frequently Asked Questions (FAQ) - E-Commerce Application 1. Q: How do I create an account? A: Click Sign Up, enter your details, verify your email or phone, and log in. 2. Q: How do I reset my password? A: Use the Forgot Password option and follow the reset link or OTP. 3. Q: How can I search for products? A: Use the search bar or browse categories and filters. 4. Q: Can I add items to a wishlist? A: Yes, click the wishlist icon on a product page. 5. Q: How do I add items to my cart? A: Click Add to Cart on the desired product. 6. Q: How do I apply a coupon? A: Enter the coupon code during checkout before payment. 7. Q: What payment methods are supported? A: Credit/debit cards, UPI, net banking, wallets, and COD where available. 8. Q: Is Cash on Delivery available? A: COD depends on product and delivery location. 9. Q: How can I track my order? A: Open My Orders and select the order to view tracking updates. 10",
         "E-Commerce Company Policy This sample policy document is intended as a general internal policy template for an e-commerce business. 1. Purpose This policy defines the standards for operating the e-commerce platform, protecting customer information, and ensuring secure, reliable, and compliant business operations. 2. Customer Accounts Customers must provide accurate information. Accounts are personal and users are responsible for maintaining password confidentiality. 3. Orders Orders are subject to product availability and payment verification. The company may cancel orders involving pricing errors, suspected fraud, or stock issues. 4. Payments Payments are processed through secure payment gateways. Sensitive payment information is not stored unless required by law or an approved payment provider. 5. Shipping and Delivery Estimated delivery times are provided for convenience and may vary. Customers receive tracking information after dispatch. 6",
@@ -52,9 +52,9 @@
         ". 5. Shipping and Delivery Estimated delivery times are provided for convenience and may vary. Customers receive tracking information after dispatch. 6. Returns and Refunds Eligible products may be returned within the specified return window. Refunds are processed after successful inspection of returned items. 7. Privacy Customer personal data is collected only for business purposes such as order processing, customer support, and legal compliance. 8. Security The platform uses encryption, authentication, and access controls to protect customer data and prevent unauthorized access. 9. Acceptable Use Users must not misuse the platform, attempt unauthorized access, upload malicious content, or engage in fraudulent activities. 10. Product Information Product descriptions and images are provided as accurately as possible. Minor variations may occur."
       ],
       "intent": "knowledge",
-      "latency_retrieval_sec": 0.797,
-      "latency_generation_sec": 1.993,
-      "latency_total_sec": 2.79
+      "latency_retrieval_sec": 0.979,
+      "latency_generation_sec": 1.799,
+      "latency_total_sec": 2.778
     }
   ]
 }

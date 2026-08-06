@@ -47,8 +47,12 @@ class Settings(BaseSettings):
     # Observability & Tracing (LangSmith)
     LANGCHAIN_TRACING_V2: bool = False
     LANGCHAIN_API_KEY: Optional[str] = None
-    LANGCHAIN_PROJECT: str = "Enterprise-Agentic-RAG"
+    LANGCHAIN_PROJECT: str = "Agentic RAG"
     LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
+    LANGSMITH_TRACING: bool = False
+    LANGSMITH_API_KEY: Optional[str] = None
+    LANGSMITH_PROJECT: Optional[str] = None
+    LANGSMITH_ENDPOINT: Optional[str] = None
     
     # Voice Input
     GCP_STT_ENABLED: bool = True

@@ -14,15 +14,22 @@ async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycles."""
     logger.info(f"Initializing {settings.PROJECT_NAME} v{settings.VERSION}...")
     # Configure LangSmith Tracing if API key is provided
-    if settings.LANGCHAIN_API_KEY:
+    langsmith_key = getattr(settings, "LANGSMITH_API_KEY", None) or getattr(settings, "LANGCHAIN_API_KEY", None)
+    if langsmith_key:
+        proj = getattr(settings, "LANGSMITH_PROJECT", None) or getattr(settings, "LANGCHAIN_PROJECT", None) or "Agentic RAG"
+        endpoint = getattr(settings, "LANGSMITH_ENDPOINT", None) or getattr(settings, "LANGCHAIN_ENDPOINT", None) or "https://api.smith.langchain.com"
+        os.environ["LANGSMITH_TRACING"] = "true"
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
-        os.environ["LANGCHAIN_API_KEY"] = settings.LANGCHAIN_API_KEY
-        os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
-        os.environ["LANGCHAIN_ENDPOINT"] = settings.LANGCHAIN_ENDPOINT
-        logger.info(f"LangSmith production tracing enabled for project: {settings.LANGCHAIN_PROJECT}")
-    elif settings.LANGCHAIN_TRACING_V2:
+        os.environ["LANGSMITH_API_KEY"] = langsmith_key
+        os.environ["LANGCHAIN_API_KEY"] = langsmith_key
+        os.environ["LANGSMITH_PROJECT"] = proj
+        os.environ["LANGCHAIN_PROJECT"] = proj
+        os.environ["LANGSMITH_ENDPOINT"] = endpoint
+        os.environ["LANGCHAIN_ENDPOINT"] = endpoint
+        logger.info(f"LangSmith production tracing enabled for project: '{proj}'")
+    elif settings.LANGCHAIN_TRACING_V2 or getattr(settings, "LANGSMITH_TRACING", False):
+        os.environ["LANGSMITH_TRACING"] = "true"
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
-        os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
         logger.info("LangSmith tracing enabled.")
 
     # Ensure directories
