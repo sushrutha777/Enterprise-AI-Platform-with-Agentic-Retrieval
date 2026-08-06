@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Mic, AudioLines, ArrowUp, Square } from 'lucide-react';
+import { Mic, ArrowUp, Square } from 'lucide-react';
 import { transcribeVoice } from '../services/api';
 
 export default function ChatInput({
@@ -145,24 +145,8 @@ export default function ChatInput({
           className="w-full bg-transparent text-white placeholder-amber-200/50 text-[15px] px-2 py-1.5 focus:outline-none resize-none max-h-[160px] scrollbar-none leading-relaxed"
         />
 
-        {/* Right Action Controls */}
-        <div className="flex items-center gap-1.5 shrink-0 pl-2">
-          {/* Dedicated Microphone Button */}
-          <button
-            type="button"
-            onClick={toggleRecording}
-            disabled={isLoading}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0 ${
-              isRecording
-                ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/30'
-                : 'text-amber-300/80 hover:text-amber-100 hover:bg-amber-950/50 active:scale-95'
-            }`}
-            title={isRecording ? "Stop voice recording" : "Voice input (Microphone)"}
-          >
-            <Mic className={`w-4 h-4 ${isRecording ? 'animate-bounce' : ''}`} />
-          </button>
-
-          {/* Primary Action Button (Send / Stop / Waveform Mode) */}
+        {/* Right Action Control */}
+        <div className="flex items-center shrink-0 pl-2">
           {isLoading ? (
             <button
               type="button"
@@ -185,29 +169,14 @@ export default function ChatInput({
             <button
               type="button"
               onClick={toggleRecording}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0 ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0 active:scale-95 ${
                 isRecording
                   ? 'bg-amber-500 text-black animate-pulse shadow-lg'
-                  : 'text-amber-400 hover:text-amber-200 hover:bg-amber-950/50 active:scale-95'
+                  : 'text-amber-400 hover:text-amber-200 hover:bg-amber-950/40'
               }`}
-              title="Voice mode waveform"
+              title={isRecording ? "Stop listening" : "Voice input"}
             >
-              {isRecording ? (
-                <div className="flex items-center gap-0.5 h-4">
-                  <span className="w-0.5 h-2 bg-black rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
-                  <span className="w-0.5 h-4 bg-black rounded-full animate-[pulse_0.4s_ease-in-out_infinite]" />
-                  <span className="w-0.5 h-3 bg-black rounded-full animate-[pulse_0.7s_ease-in-out_infinite]" />
-                </div>
-              ) : (
-                /* Golden 5-bar Waveform Icon */
-                <svg className="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-                  <rect x="2" y="8" width="2.5" height="8" rx="1.25" />
-                  <rect x="6.5" y="4" width="2.5" height="16" rx="1.25" />
-                  <rect x="11" y="2" width="2.5" height="20" rx="1.25" />
-                  <rect x="15.5" y="4" width="2.5" height="16" rx="1.25" />
-                  <rect x="20" y="8" width="2.5" height="8" rx="1.25" />
-                </svg>
-              )}
+              <Mic className={`w-4 h-4 ${isRecording ? 'animate-bounce' : ''}`} />
             </button>
           )}
         </div>
