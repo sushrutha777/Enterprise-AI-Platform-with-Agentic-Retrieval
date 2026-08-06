@@ -305,12 +305,37 @@ LLM_MODEL=enterprise-chat
 
 ---
 
-## Running Tests
-
+## Running Tests & Evaluation
+ 
+### 1. PyTest Unit Tests
 ```bash
-# Run pytest suite
 pytest tests/ -v
 ```
+
+### 2. RAGAS Automated Evaluation Benchmark
+Evaluate Faithfulness, Answer Relevancy, Context Precision, and Context Recall using RAGAS:
+
+```bash
+# Run automated benchmark
+python eval/evaluate_ragas.py
+```
+
+Results are scored from `0.0` to `1.0` and saved automatically to `eval/ragas_report.json`.
+
+---
+
+## Production Observability & Tracing (LangSmith)
+
+The platform supports native integration with **LangSmith** for real-time visual execution tracing, latency breakdown per token, tool call tracking, and user feedback:
+
+1. Obtain a free API key from [smith.langchain.com](https://smith.langchain.com).
+2. Add your key to `.env`:
+```env
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=lsv2_pt_your_free_key_here
+LANGCHAIN_PROJECT=Enterprise-Agentic-RAG
+```
+3. All streaming chat interactions and tool calls will now automatically record live traces into your LangSmith dashboard.
 
 ---
 

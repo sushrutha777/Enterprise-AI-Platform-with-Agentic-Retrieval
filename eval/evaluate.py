@@ -1,8 +1,11 @@
-"""Evaluation script for assessing RAG latency and accuracy."""
-
+import os
+import sys
 import asyncio
 import time
 from typing import List, Dict
+
+# Ensure project root is in python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from app.agents.orchestrator import AgentOrchestrator
 from app.retriever import get_default_dense_retriever, SparseBM25Retriever, HybridRetriever
 from app.reranker.null_reranker import NullReranker

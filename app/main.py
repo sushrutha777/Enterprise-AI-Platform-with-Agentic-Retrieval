@@ -13,6 +13,18 @@ from app.api.v1 import api_v1_router
 async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycles."""
     logger.info(f"Initializing {settings.PROJECT_NAME} v{settings.VERSION}...")
+    # Configure LangSmith Tracing if API key is provided
+    if settings.LANGCHAIN_API_KEY:
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_API_KEY"] = settings.LANGCHAIN_API_KEY
+        os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
+        os.environ["LANGCHAIN_ENDPOINT"] = settings.LANGCHAIN_ENDPOINT
+        logger.info(f"LangSmith production tracing enabled for project: {settings.LANGCHAIN_PROJECT}")
+    elif settings.LANGCHAIN_TRACING_V2:
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
+        logger.info("LangSmith tracing enabled.")
+
     # Ensure directories
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     logger.info("Application initialized successfully.")

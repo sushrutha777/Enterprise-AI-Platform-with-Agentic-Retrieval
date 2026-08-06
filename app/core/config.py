@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[str] = None
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"
     
+    # Observability & Tracing (LangSmith)
+    LANGCHAIN_TRACING_V2: bool = False
+    LANGCHAIN_API_KEY: Optional[str] = None
+    LANGCHAIN_PROJECT: str = "Enterprise-Agentic-RAG"
+    LANGCHAIN_ENDPOINT: str = "https://api.smith.langchain.com"
+    
     # Voice Input
     GCP_STT_ENABLED: bool = True
 
