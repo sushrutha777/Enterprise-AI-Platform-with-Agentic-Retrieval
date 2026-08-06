@@ -326,11 +326,11 @@ python eval/evaluate_ragas.py
 #### Production Evaluation Benchmark Results
 | Metric | Platform Score | Industry Standard | Assessment | What It Measures |
 | :--- | :---: | :---: | :---: | :--- |
-| **Answer Relevancy** | **`0.9200`** | `> 0.85` | 🌟 **Outstanding** | Direct semantic alignment of generated answers to user inquiries. |
-| **Context Recall** | **`0.9000`** | `> 0.80` | 🌟 **Outstanding** | Retrieval completeness: % of required ground-truth facts retrieved. |
-| **Context Precision** | **`0.8800`** | `> 0.80` | 🟢 **High** | Quality of ranking: Most relevant chunks placed at the top of context. |
-| **Faithfulness** | **`0.8132`** | `> 0.75` | 🟢 **Solid** | Hallucination resistance: Verification that facts are grounded in documents. |
-| **Total Latency** | **`3.22s`** | `< 5.0s` | 🟢 **Fast** | End-to-end multi-step agent flow (First token stream arrives in <400ms). |
+| **Answer Relevancy** | **`0.9200`** | `> 0.85` | **Outstanding** | Direct semantic alignment of generated answers to user inquiries. |
+| **Context Recall** | **`0.9000`** | `> 0.80` | **Outstanding** | Retrieval completeness: % of required ground-truth facts retrieved. |
+| **Context Precision** | **`0.8800`** | `> 0.80` | **High** | Quality of ranking: Most relevant chunks placed at the top of context. |
+| **Faithfulness** | **`0.8132`** | `> 0.75` | **Solid** | Hallucination resistance: Verification that facts are grounded in documents. |
+| **Total Latency** | **`3.22s`** | `< 5.0s` | **Fast** | End-to-end multi-step agent flow (First token stream arrives in <400ms). |
 
 * **JSON Output**: Stored in [`eval/ragas_report.json`](eval/ragas_report.json) with per-query logs and latency breakdowns.
 * **REST API**: Developers can query live metrics via `GET /api/v1/eval/metrics` or via Swagger UI (`http://localhost:8000/docs`).
