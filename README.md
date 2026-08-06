@@ -2,6 +2,13 @@
 
 An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **async Python orchestrator**, **Hybrid Retrieval (Dense Qdrant + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, a pluggable **Knowledge Ingestion Platform**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
 
+> [!NOTE]
+> ### ⚡ Current LLM Setup (Out of the Box)
+> - 🟢 **Primary LLM**: **Google Gemini 3.1 Flash Lite** (`gemini/gemini-3.1-flash-lite`)
+> - 🟡 **Automated Fallback**: **Groq Llama 3** (`groq/llama3-8b-8192` / `llama-3.3-70b`) for zero-downtime failover
+> - 🔵 **Embeddings**: **Google Gemini Embeddings** (`models/gemini-embedding-001`)
+> - 🚀 **Future-Proof**: Ready to switch to **Anthropic Claude 3.5** or **OpenAI GPT-4o** via LiteLLM with zero code changes.
+
 ---
 
 ## System Architecture
@@ -25,21 +32,22 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
                   [Direct Chat]     [Knowledge / Complex Query]
                          │                 │
                          ▼                 ▼
-                   Gemini Direct     Parallel Tool Execution
-                                           │
-                         ┌─────────────────┼─────────────────┐
-                         ▼                 ▼                 ▼
-                 Hybrid Retriever     Wikipedia API     Tavily / DuckDuckGo  
-                 (Qdrant + BM25)                           Web Search
-                         │
-                         ▼
-                 FlashRank Reranker
+               ┌───────────────────┐  Parallel Tool Execution
+               │ Primary: Gemini   │       │
+               │ Fallback: Groq    │ ┌─────┼─────────────┐
+               └───────────────────┘ ▼     ▼             ▼
+                           Hybrid Retriever Wikipedia  Tavily / DDG
+                           (Qdrant + BM25)             Web Search
+                                 │
+                                 ▼
+                         FlashRank Reranker
 ```
 
 ---
 
 ## Key Features
 
+- **Dual-Provider Resilience (Gemini + Groq Fallback)**: Runs **Google Gemini 3.1 Flash Lite** as primary generation engine with automatic, sub-second fallback to **Groq Llama 3** if Google rate-limits or fails.
 - **Autonomous Agentic Routing**: A custom rule-and-LLM-based routing engine classifies intent, rewrites queries contextually, and executes parallel tool-calling workflows.
 - **Hybrid Search & Reranking**: Combines Dense Vector Search (Google Gemini Embeddings + Qdrant) and Sparse Keyword Search (BM25) via Reciprocal Rank Fusion (RRF), enhanced with FlashRank neural reranking.
 - **Pluggable Knowledge Ingestion Platform**: A modular ingestion pipeline (`ingestion_platform/`) with clean abstractions for Connectors (PDF, TXT) and Pipeline Stages (Cleaning, Semantic Chunking, Gemini Embedding, Indexing).
@@ -55,8 +63,9 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 | :--- | :--- |
 | **Frontend** | React 19, Vite, TailwindCSS v4, Lucide React, React Markdown, Remark GFM |
 | **Backend API** | FastAPI, Pydantic v2, Uvicorn, Python 3.12 |
-| **AI / Orchestration** | LangChain, Google Gemini (`gemini-3.1-flash-lite`), DuckDuckGo, Tavily API |
-| **Search & Indexing** | Qdrant Vector Database, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
+| **Active LLM Engine** | **Primary**: Google Gemini (`gemini-3.1-flash-lite`)<br>**Fallback**: Groq (`llama3-8b` / `llama-3.3-70b`)<br>**Gateway**: LiteLLM |
+| **Search & Indexing** | Qdrant Vector Database, Gemini Embeddings, Rank-BM25, PyMuPDF, FlashRank Cross-Encoder |
+| **Web Search Tools** | Tavily Search API, DuckDuckGo Search, Wikipedia API |
 | **DevOps & CI/CD** | Docker, Docker Compose, Google Cloud Build, Pytest |
 
 ---
@@ -200,20 +209,25 @@ The platform is designed with a two-phase AI Gateway strategy powered by **LiteL
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. Current State: Embedded In-Process Gateway (Fast & Lightweight)
+### 1. 🟢 Current State: Embedded In-Process Gateway (Active by Default)
+
+> **Active Configuration**:
+> - **Primary LLM**: `gemini/gemini-3.1-flash-lite` (via `GOOGLE_API_KEY`)
+> - **Automatic Fallback**: `groq/llama-3.3-70b-versatile` or `groq/llama3-8b-8192` (via `GROQ_API_KEY`)
+> - **Vector Embeddings**: `models/gemini-embedding-001`
 
 * **How it Works**: The backend uses the embedded Python `litellm` library directly inside [app/llm/gateway.py](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/app/llm/gateway.py).
-* **Zero Infrastructure Overhead**: Runs within the FastAPI process with no extra containers, databases, or network hops.
-* **Active Setup**: Uses **Google Gemini 3.1 Flash Lite** as primary, with automatic in-process fallback to **Groq Llama 3.3** for instant failover during API spikes.
-* **Switching Models**: Swap models instantly by changing `.env` variables:
+* **Zero Infrastructure Overhead**: Runs within the FastAPI process with no extra proxy containers or network hops.
+* **Instant Fallback**: If Gemini encounters rate limits (HTTP 429) or temporary outages, LiteLLM automatically shifts to Groq within milliseconds without dropping the user's stream.
+* **Switching Models**: Swap models anytime by updating `.env`:
 
-| Provider | Model String (`LLM_MODEL`) | Required API Key in `.env` |
-| :--- | :--- | :--- |
-| **Google Gemini** *(Current Default)* | `gemini/gemini-3.1-flash-lite` | `GOOGLE_API_KEY` |
-| **OpenAI** | `gpt-4o` or `gpt-4o-mini` | `OPENAI_API_KEY` |
-| **Anthropic Claude** | `claude-3-5-sonnet-20241022` or `claude-3-5-haiku-20241022` | `ANTHROPIC_API_KEY` |
-| **Groq Llama** *(Current Fallback)* | `groq/llama-3.3-70b-versatile` | `GROQ_API_KEY` |
-| **AWS Bedrock** | `bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0` | AWS Credentials |
+| Provider | Model String (`LLM_MODEL`) | Required API Key in `.env` | Status |
+| :--- | :--- | :--- | :--- |
+| **Google Gemini** | `gemini/gemini-3.1-flash-lite` | `GOOGLE_API_KEY` | 🟢 **ACTIVE PRIMARY** |
+| **Groq Llama** | `groq/llama-3.3-70b-versatile` | `GROQ_API_KEY` | 🟡 **ACTIVE FALLBACK** |
+| **OpenAI** | `gpt-4o` or `gpt-4o-mini` | `OPENAI_API_KEY` | ⚪ Optional Drop-in |
+| **Anthropic Claude** | `claude-3-5-sonnet-20241022` | `ANTHROPIC_API_KEY` | ⚪ Optional Drop-in |
+| **AWS Bedrock** | `bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0` | AWS Credentials | ⚪ Optional Drop-in |
 
 ---
 
