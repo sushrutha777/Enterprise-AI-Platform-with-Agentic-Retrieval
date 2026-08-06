@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     LLM_MODEL: str = "gemini/gemini-3.1-flash-lite"
     LITELLM_API_BASE: Optional[str] = None
     GOOGLE_API_KEY: Optional[str] = None
+    OPENAI_API_KEY: Optional[str] = None
+    ANTHROPIC_API_KEY: Optional[str] = None
     TAVILY_API_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
     EMBEDDING_MODEL: str = "models/gemini-embedding-001"

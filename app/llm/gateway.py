@@ -20,6 +20,10 @@ class LLMGateway:
         # Set keys in environment for LiteLLM to pick up automatically
         if settings.GOOGLE_API_KEY:
             os.environ["GEMINI_API_KEY"] = settings.GOOGLE_API_KEY
+        if getattr(settings, "OPENAI_API_KEY", None):
+            os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
+        if getattr(settings, "ANTHROPIC_API_KEY", None):
+            os.environ["ANTHROPIC_API_KEY"] = settings.ANTHROPIC_API_KEY
         if getattr(settings, "GROQ_API_KEY", None):
             os.environ["GROQ_API_KEY"] = settings.GROQ_API_KEY
 

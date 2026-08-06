@@ -73,36 +73,39 @@ An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)**
 
 2. Create a `.env` file in the root directory. Here is a complete template of what you can configure:
    ```env
-   # Primary AI Model and API Keys
-   GOOGLE_API_KEY=your_gemini_api_key_here
-   TAVILY_API_KEY=your_tavily_api_key_optional
-   GROQ_API_KEY=your_groq_api_key_optional
-   
-   # Model Selection
-   LLM_MODEL=gemini/gemini-3.1-flash-lite
-   EMBEDDING_MODEL=models/gemini-embedding-001
-   
-   # AI Gateway Configuration
-   # Leave blank for Embedded Gateway. Set to URL (e.g. http://localhost:4000) for Standalone Proxy.
-   LITELLM_API_BASE=
-   
-   # Vector Database (Qdrant) Configuration
-   VECTOR_DB_TYPE=qdrant
-   QDRANT_COLLECTION_NAME=agentic_rag_documents
-   QDRANT_URL=https://your-cluster-id.cloud.qdrant.io
-   QDRANT_API_KEY=your_qdrant_api_key
-   
-   # Retrieval Tuning Settings
-   RETRIEVAL_TOP_K=5
-   RERANKED_TOP_K=5
-   USE_HYBRID_SEARCH=true
-   USE_RERANKER=true
-   
-   # Application Environment
-   ENVIRONMENT=development
-   DEBUG=false
-   LOG_LEVEL=INFO
-   ```
+    # Primary AI Model and API Keys
+    GOOGLE_API_KEY=your_gemini_api_key_here
+    OPENAI_API_KEY=your_openai_api_key_optional
+    ANTHROPIC_API_KEY=your_anthropic_api_key_optional
+    TAVILY_API_KEY=your_tavily_api_key_optional
+    GROQ_API_KEY=your_groq_api_key_optional
+    
+    # Model Selection
+    LLM_MODEL=gemini/gemini-3.1-flash-lite
+    EMBEDDING_MODEL=models/gemini-embedding-001
+    
+    # AI Gateway Configuration
+    # [CURRENT STATE]: Leave blank. The app uses an Embedded Gateway to handle Gemini -> Groq fallbacks internally.
+    # [FUTURE SCOPE]: Set to a URL (e.g. 'http://localhost:4000') if you deploy a standalone LiteLLM Proxy Server in the future to handle team budgets, API key load balancing, and strict cost tracking.
+    LITELLM_API_BASE=
+    
+    # Vector Database (Qdrant) Configuration
+    VECTOR_DB_TYPE=qdrant
+    QDRANT_COLLECTION_NAME=agentic_rag_documents
+    QDRANT_URL=https://your-cluster-id.cloud.qdrant.io
+    QDRANT_API_KEY=your_qdrant_api_key
+    
+    # Retrieval Tuning Settings
+    RETRIEVAL_TOP_K=5
+    RERANKED_TOP_K=5
+    USE_HYBRID_SEARCH=true
+    USE_RERANKER=true
+    
+    # Application Environment
+    ENVIRONMENT=development
+    DEBUG=false
+    LOG_LEVEL=INFO
+    ```
 
 3. Launch all services (starts backend API and frontend):
    ```bash
@@ -172,6 +175,109 @@ python ingest.py --source ./data --reindex
 
 # Run using the modular CLI entrypoint
 python -m ingestion_platform.cli ./data
+```
+
+---
+
+## Multi-LLM Provider Switching & AI Gateway Architecture
+
+The platform is designed with a two-phase AI Gateway strategy powered by **LiteLLM**, allowing seamless transitions between model providers (**Google Gemini**, **OpenAI**, **Anthropic Claude**, **Groq**, **AWS Bedrock**) without touching agent business logic.
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             AI GATEWAY MODES                                │
+│                                                                             │
+│  [CURRENT STATE] Embedded In-Process Gateway                                │
+│  FastAPI Backend ──(In-Process LiteLLM SDK)──► Gemini / Fallback Groq       │
+│                                                                             │
+│  [FUTURE SCOPE] Standalone LiteLLM Proxy (When Application Scales)          │
+│  FastAPI Backend ──(LITELLM_API_BASE:4000)──► Central AI Gateway Proxy     │
+│                                                     │                       │
+│                    ┌────────────────────────────────┼─────────────────┐     │
+│                    ▼                                ▼                 ▼     │
+│              Anthropic Claude                 OpenAI GPT-4o     Google / Groq
+│              (Team A Quota)                  (Team B Quota)    (Auto-Fallback)
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1. Current State: Embedded In-Process Gateway (Fast & Lightweight)
+
+* **How it Works**: The backend uses the embedded Python `litellm` library directly inside [app/llm/gateway.py](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/app/llm/gateway.py).
+* **Zero Infrastructure Overhead**: Runs within the FastAPI process with no extra containers, databases, or network hops.
+* **Active Setup**: Uses **Google Gemini 3.1 Flash Lite** as primary, with automatic in-process fallback to **Groq Llama 3.3** for instant failover during API spikes.
+* **Switching Models**: Swap models instantly by changing `.env` variables:
+
+| Provider | Model String (`LLM_MODEL`) | Required API Key in `.env` |
+| :--- | :--- | :--- |
+| **Google Gemini** *(Current Default)* | `gemini/gemini-3.1-flash-lite` | `GOOGLE_API_KEY` |
+| **OpenAI** | `gpt-4o` or `gpt-4o-mini` | `OPENAI_API_KEY` |
+| **Anthropic Claude** | `claude-3-5-sonnet-20241022` or `claude-3-5-haiku-20241022` | `ANTHROPIC_API_KEY` |
+| **Groq Llama** *(Current Fallback)* | `groq/llama-3.3-70b-versatile` | `GROQ_API_KEY` |
+| **AWS Bedrock** | `bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0` | AWS Credentials |
+
+---
+
+### 2. Future Scope: Standalone LiteLLM Proxy Server (When the Application Scales)
+
+As traffic grows across multiple enterprise teams, departments, or microservices, you can deploy a standalone **LiteLLM Proxy Server** (`ghcr.io/berriai/litellm:main-latest`) to act as a centralized enterprise AI control plane.
+
+#### Why Scale to a Standalone Proxy?
+* **Centralized Budget & Cost Management**: Allocate virtual API keys with strict monthly spend limits per department or team.
+* **Unified Key Rotation & Governance**: Store enterprise provider API keys in one central gateway rather than distributing them across multiple apps.
+* **Zero-Downtime Model Swapping**: Shift traffic from Claude to OpenAI or Gemini globally without modifying or redeploying any application code.
+* **Admin Analytics Dashboard**: Web console at `http://localhost:4000/ui` showing real-time token spend, latency graphs (p50/p99), and error rates.
+* **Standardized Endpoints**: Exposes 100% OpenAI-compatible `/v1/chat/completions`, `/v1/embeddings`, and `/v1/models` endpoints.
+
+#### Step 1: Create `litellm-config.yaml`
+```yaml
+model_list:
+  # Primary Enterprise Model (Claude 3.5 Sonnet)
+  - model_name: enterprise-chat
+    litellm_params:
+      model: anthropic/claude-3-5-sonnet-20241022
+      api_key: "os.environ/ANTHROPIC_API_KEY"
+
+  # Secondary Fallback Model (OpenAI GPT-4o-mini)
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: gpt-4o-mini
+      api_key: "os.environ/OPENAI_API_KEY"
+
+  # Fast Open-Source Fallback (Groq)
+  - model_name: groq-llama
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: "os.environ/GROQ_API_KEY"
+
+litellm_settings:
+  fallbacks: [{"enterprise-chat": ["gpt-4o-mini", "groq-llama"]}]
+  num_retries: 3
+  request_timeout: 30
+```
+
+#### Step 2: Run the Proxy Container
+```bash
+docker run -d \
+  --name litellm-proxy \
+  -p 4000:4000 \
+  -v $(pwd)/litellm-config.yaml:/app/config.yaml \
+  -e ANTHROPIC_API_KEY="sk-ant-..." \
+  -e OPENAI_API_KEY="sk-..." \
+  -e GEMINI_API_KEY="AIzaSy..." \
+  -e GROQ_API_KEY="gsk_..." \
+  -e LITELLM_MASTER_KEY="sk-master-admin-key" \
+  ghcr.io/berriai/litellm:main-latest \
+  --config /app/config.yaml --port 4000
+```
+
+#### Step 3: Connect this Application to the Proxy
+In your `.env`:
+```dotenv
+# Point backend to the LiteLLM Proxy endpoint
+LITELLM_API_BASE=http://localhost:4000
+
+# Use the model alias registered in the proxy configuration
+LLM_MODEL=enterprise-chat
 ```
 
 ---
