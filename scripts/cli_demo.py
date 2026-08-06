@@ -1,4 +1,4 @@
-"""Interactive CLI script to test how the Agentic RAG application answers questions."""
+"""Interactive CLI Demonstration Script for Enterprise Agentic RAG Platform."""
 
 import os
 import sys
@@ -7,13 +7,13 @@ import asyncio
 from pathlib import Path
 
 # Add project root to sys.path
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Ensure UTF-8 output on Windows terminal
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore
 
 from app.core.config import settings
 from app.api.v1.deps import get_chat_service
@@ -92,7 +92,7 @@ async def ask_question(question: str, conversation_id: str = "cli_demo_session")
 async def run_predefined_tests():
     """Runs a suite of sample questions across different agent intents."""
     print("\n" + "#" * 80)
-    print("🚀 RUNNING AGENTIC RAG QUESTION-ANSWERING TEST SUITE")
+    print("🚀 RUNNING AGENTIC RAG QUESTION-ANSWERING DEMO")
     print("#" * 80)
 
     suite = [

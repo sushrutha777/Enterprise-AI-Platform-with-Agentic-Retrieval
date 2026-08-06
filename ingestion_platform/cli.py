@@ -32,10 +32,10 @@ def load_documents_from_directory(directory: str) -> List[StandardDocument]:
                 docs = pdf_connector.extract(path)
                 documents.extend(docs)
                 logger.info(f"Extracted {len(docs)} pages from PDF: {file}")
-            elif ext == "txt":
+            elif ext in ["txt", "md", "markdown"]:
                 docs = text_connector.extract(path)
                 documents.extend(docs)
-                logger.info(f"Extracted {len(docs)} segments from TXT: {file}")
+                logger.info(f"Extracted {len(docs)} segments from {ext.upper()}: {file}")
             else:
                 logger.debug(f"Skipping unsupported file type: {file}")
                 

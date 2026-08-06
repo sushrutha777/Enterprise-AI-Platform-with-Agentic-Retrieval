@@ -78,6 +78,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Agent / IDE Cache
+# Agent / IDE Cache & Scratchpads
 .agents/
 .gemini/
+scratch/
+*.system_generated*

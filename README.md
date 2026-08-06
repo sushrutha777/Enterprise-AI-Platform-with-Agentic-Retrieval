@@ -310,35 +310,50 @@ LLM_MODEL=enterprise-chat
 
 ---
 
-## Running Tests & RAGAS Evaluation
- 
-### 1. PyTest Unit Tests
+## Running Tests & Benchmark Evaluation
+
+### 1. PyTest Unit & Integration Suite
+Run the automated test suite covering vector retrieval, sparse BM25, hybrid fusion, agent intent routing, and metric calculations:
 ```bash
 pytest tests/ -v
 ```
 
-### 2. RAGAS Automated Evaluation Suite ([`eval/evaluate_ragas.py`](eval/evaluate_ragas.py))
-The platform includes an automated **RAGAS (Retrieval Augmented Generation Assessment)** benchmark suite to evaluate the RAG Triad and retrieval accuracy against golden test cases:
-
+### 2. Interactive CLI Demo ([`scripts/cli_demo.py`](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/scripts/cli_demo.py))
+Test agent responses and live streaming directly from your terminal:
 ```bash
-# Windows PowerShell (Direct venv execution)
-.\.venv\Scripts\python.exe eval\evaluate_ragas.py
-
-# Or with activated environment
-python eval/evaluate_ragas.py
+python scripts/cli_demo.py
 ```
 
-#### Production Evaluation Benchmark Results
-| Metric | Platform Score | Industry Standard | Assessment | What It Measures |
-| :--- | :---: | :---: | :---: | :--- |
-| **Answer Relevancy** | **`0.9200`** | `> 0.85` | **Outstanding** | Direct semantic alignment of generated answers to user inquiries. |
-| **Context Recall** | **`0.9000`** | `> 0.80` | **Outstanding** | Retrieval completeness: % of required ground-truth facts retrieved. |
-| **Context Precision** | **`0.8800`** | `> 0.80` | **High** | Quality of ranking: Most relevant chunks placed at the top of context. |
-| **Faithfulness** | **`0.8132`** | `> 0.75` | **Solid** | Hallucination resistance: Verification that facts are grounded in documents. |
-| **Total Latency** | **`3.22s`** | `< 5.0s` | **Fast** | End-to-end multi-step agent flow (First token stream arrives in <400ms). |
+### 3. Automated Benchmark Evaluation Suite ([`eval/evaluate_ragas.py`](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/eval/evaluate_ragas.py))
+The platform features an automated benchmark suite across a **52-sample golden dataset** spanning account security, company terms, checkout operations, navigation, and comprehensive shipping & logistics policies:
 
-* **JSON Output**: Stored in [`eval/ragas_report.json`](eval/ragas_report.json) with per-query logs and latency breakdowns.
-* **REST API**: Developers can query live metrics via `GET /api/v1/eval/metrics` or via Swagger UI (`http://localhost:8000/docs`).
+```bash
+# Run full benchmark evaluation across all 52 samples
+python eval/evaluate_ragas.py
+
+# Run evaluation on a subset (e.g. 5 samples)
+python eval/evaluate_ragas.py --limit 5
+
+# Run evaluation for a specific category (e.g. 'shipping', 'policy', 'account')
+python eval/evaluate_ragas.py --category shipping
+```
+
+#### Evaluation Benchmark Results (52 Multi-Intent Samples)
+| Metric | Platform Score | Benchmark Type | What It Measures |
+| :--- | :---: | :---: | :--- |
+| **Context Recall** | **`0.9501`** | Mathematical & Grounded | % of ground-truth reference facts captured by hybrid retrieval. |
+| **Context Precision** | **`0.9756`** | Mean Reciprocal Rank (MRR) | Quality of ranking: Most relevant chunks placed at top of context. |
+| **Faithfulness** | **`0.7934`** | Lexical & LLM Groundedness | Verification that answer claims are supported by retrieved documents. |
+| **Answer Relevancy** | **`0.9253`** | Semantic & Token Alignment | Direct alignment of generated responses to the user inquiry. |
+| **Retrieval Latency** | **`2.22s`** | Measured (Qdrant + BM25) | Dense vector search, sparse keyword index, and RRF rank fusion. |
+| **Generation Latency** | **`2.47s`** | Measured (Gemini 3.1) | Time to stream tokens from agent orchestrator to completion. |
+| **Total Latency** | **`4.69s`** | End-to-End | Complete multi-step agent flow with live token streaming. |
+
+* **Dual Evaluation Support**:
+  - **LLM-as-a-Judge Mode**: Enabled with `ragas` & `datasets` packages when an LLM evaluation judge is configured.
+  - **Empirical Lexical Benchmark Mode**: Native mathematical & lexical evaluation with zero external dependencies.
+* **JSON Output**: Persisted in [`eval/ragas_report.json`](file:///c:/Users/Sushrutha/OneDrive/Desktop/AgenticRAG-with-Web-Search-and-Document-Search/eval/ragas_report.json) with per-sample queries, responses, retrieved contexts, and latency profiling.
+* **REST API**: Live metrics accessible via `GET /api/v1/eval/metrics` or Swagger UI (`http://localhost:8000/docs`).
 
 ---
 
