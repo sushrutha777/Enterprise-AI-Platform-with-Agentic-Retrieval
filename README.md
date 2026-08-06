@@ -3,44 +3,53 @@
 An enterprise-grade, full-stack **Agentic Retrieval-Augmented Generation (RAG)** platform featuring an autonomous **async Python orchestrator**, **Hybrid Retrieval (Dense Qdrant + Sparse BM25 with Reciprocal Rank Fusion)**, **FlashRank Reranking**, **FastAPI SSE Token Streaming**, a pluggable **Knowledge Ingestion Platform**, and a modern **React + TailwindCSS + Vite** ChatGPT-style interface.
 
 > [!NOTE]
-> ### ⚡ Current LLM Setup (Out of the Box)
-> - 🟢 **Primary LLM**: **Google Gemini 3.1 Flash Lite** (`gemini/gemini-3.1-flash-lite`)
-> - 🟡 **Automated Fallback**: **Groq Llama 3** (`groq/llama3-8b-8192` / `llama-3.3-70b`) for zero-downtime failover
-> - 🔵 **Embeddings**: **Google Gemini Embeddings** (`models/gemini-embedding-001`)
-> - 🚀 **Future-Proof**: Ready to switch to **Anthropic Claude 3.5** or **OpenAI GPT-4o** via LiteLLM with zero code changes.
+> ### Current LLM Setup (Out of the Box)
+> - **Primary LLM**: **Google Gemini 3.1 Flash Lite** (`gemini/gemini-3.1-flash-lite`)
+> - **Automated Fallback**: **Groq Llama 3** (`groq/llama3-8b-8192` / `llama-3.3-70b`) for zero-downtime failover
+> - **Embeddings**: **Google Gemini Embeddings** (`models/gemini-embedding-001`)
+> - **Future-Proof**: Ready to switch to **Anthropic Claude 3.5** or **OpenAI GPT-4o** via LiteLLM with zero code changes.
 
 ---
 
 ## System Architecture
 
 ```text
-                  ┌───────────────────────────────┐
-                  │    React + Vite Frontend      │
-                  │  (Tailwind, SSE, Dark Theme)  │
-                  └──────────────┬────────────────┘
-                                 │ REST / SSE
-                                 ▼
-                  ┌───────────────────────────────┐
-                  │       FastAPI Backend         │
-                  │   (Auth, Streaming, Services) │
-                  └──────────────┬────────────────┘
-                                 │
-                  ┌──────────────▼────────────────┐
-                  │   Async Agent Orchestrator    │
-                  └──────┬─────────────────┬──────┘
-                         │                 │
-                  [Direct Chat]     [Knowledge / Complex Query]
-                         │                 │
-                         ▼                 ▼
-                   Gemini Direct     Parallel Tool Execution
-                                           │
-                         ┌─────────────────┼─────────────────┐
-                         ▼                 ▼                 ▼
-                 Hybrid Retriever     Wikipedia API     Tavily / DuckDuckGo  
-                 (Qdrant + BM25)                           Web Search
-                                 │
-                                 ▼
-                         FlashRank Reranker
+                                  ┌───────────────────────────────┐
+                                  │    React + Vite Frontend      │
+                                  │  (Tailwind, SSE, Dark Theme)  │
+                                  └──────────────┬────────────────┘
+                                                 │ REST / SSE
+                                                 ▼
+                                  ┌───────────────────────────────┐
+                                  │       FastAPI Backend         │
+                                  │   (Auth, Streaming, Services) │
+                                  └──────────────┬────────────────┘
+                                                 │
+                                  ┌──────────────▼────────────────┐
+                                  │   Async Agent Orchestrator    │
+                                  └──────┬─────────────────┬──────┘
+                                         │                 │
+            ┌────────────────────────────┘                 └────────────────────────────┐
+            ▼                                                                           ▼
+   [ Direct Conversation ]                                                   [ Knowledge / Agentic Query ]
+            │                                                                           │
+            ▼                                                                           ▼
+┌───────────────────────────────┐                                       ┌───────────────────────────────┐
+│        LLM Direct Chat        │                                       │    Parallel Tool Execution    │
+│  - Primary: Google Gemini     │                                       └───────────────┬───────────────┘
+│  - Fallback: Groq Llama 3     │                                                       │
+└───────────────────────────────┘                                    ┌──────────────────┼──────────────────┐
+                                                                     ▼                  ▼                  ▼
+                                                            ┌─────────────────┐ ┌───────────────┐ ┌─────────────────┐
+                                                            │  Hybrid Search  │ │ Wikipedia API │ │ Tavily / DDG    │
+                                                            │ (Qdrant + BM25) │ └───────────────┘ │ Web Search      │
+                                                            └────────┬────────┘                   └─────────────────┘
+                                                                     │
+                                                                     ▼
+                                                            ┌─────────────────┐
+                                                            │ FlashRank       │
+                                                            │ Neural Reranker │
+                                                            └─────────────────┘
 ```
 
 ---
@@ -209,7 +218,7 @@ The platform is designed with a two-phase AI Gateway strategy powered by **LiteL
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. 🟢 Current State: Embedded In-Process Gateway (Active by Default)
+### 1. Current State: Embedded In-Process Gateway (Active by Default)
 
 > **Active Configuration**:
 > - **Primary LLM**: `gemini/gemini-3.1-flash-lite` (via `GOOGLE_API_KEY`)
@@ -223,11 +232,11 @@ The platform is designed with a two-phase AI Gateway strategy powered by **LiteL
 
 | Provider | Model String (`LLM_MODEL`) | Required API Key in `.env` | Status |
 | :--- | :--- | :--- | :--- |
-| **Google Gemini** | `gemini/gemini-3.1-flash-lite` | `GOOGLE_API_KEY` | 🟢 **ACTIVE PRIMARY** |
-| **Groq Llama** | `groq/llama-3.3-70b-versatile` | `GROQ_API_KEY` | 🟡 **ACTIVE FALLBACK** |
-| **OpenAI** | `gpt-4o` or `gpt-4o-mini` | `OPENAI_API_KEY` | ⚪ Optional Drop-in |
-| **Anthropic Claude** | `claude-3-5-sonnet-20241022` | `ANTHROPIC_API_KEY` | ⚪ Optional Drop-in |
-| **AWS Bedrock** | `bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0` | AWS Credentials | ⚪ Optional Drop-in |
+| **Google Gemini** | `gemini/gemini-3.1-flash-lite` | `GOOGLE_API_KEY` | **Active Primary** |
+| **Groq Llama** | `groq/llama-3.3-70b-versatile` | `GROQ_API_KEY` | **Active Fallback** |
+| **OpenAI** | `gpt-4o` or `gpt-4o-mini` | `OPENAI_API_KEY` | Optional Drop-in |
+| **Anthropic Claude** | `claude-3-5-sonnet-20241022` | `ANTHROPIC_API_KEY` | Optional Drop-in |
+| **AWS Bedrock** | `bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0` | AWS Credentials | Optional Drop-in |
 
 ---
 
