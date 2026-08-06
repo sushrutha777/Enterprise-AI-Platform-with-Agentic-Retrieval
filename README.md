@@ -191,12 +191,12 @@ The platform is designed with a two-phase AI Gateway strategy powered by **LiteL
 │  FastAPI Backend ──(In-Process LiteLLM SDK)──► Gemini / Fallback Groq       │
 │                                                                             │
 │  [FUTURE SCOPE] Standalone LiteLLM Proxy (When Application Scales)          │
-│  FastAPI Backend ──(LITELLM_API_BASE:4000)──► Central AI Gateway Proxy     │
-│                                                     │                       │
-│                    ┌────────────────────────────────┼─────────────────┐     │
-│                    ▼                                ▼                 ▼     │
-│              Anthropic Claude                 OpenAI GPT-4o     Google / Groq
-│              (Team A Quota)                  (Team B Quota)    (Auto-Fallback)
+│  FastAPI Backend ──(LITELLM_API_BASE:4000)──► Central AI Gateway Proxy      │
+│                                                  │                          │
+│                    ┌─────────────────────────────┼─────────────────┐        │
+│                    ▼                             ▼                 ▼        │
+│              Anthropic Claude              OpenAI GPT-4o     Google / Groq  |
+│              (Team A Quota)               (Team B Quota)    (Auto-Fallback) |
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
