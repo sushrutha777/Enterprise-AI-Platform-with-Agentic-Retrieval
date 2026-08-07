@@ -4,9 +4,9 @@ steps:
     args:
       - 'build'
       - '-t'
-      - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag:$COMMIT_SHA'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
       - '-t'
-      - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag:latest'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
       - '.'
 
   # Push container image to Artifact Registry
@@ -14,7 +14,7 @@ steps:
     args:
       - 'push'
       - '--all-tags'
-      - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME'
 
   # Deploy image to Google Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -22,11 +22,11 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'agentic-rag-service'
+      - '$_SERVICE_NAME'
       - '--image'
-      - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag:$COMMIT_SHA'
+      - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
       - '--region'
-      - '$_LOCATION'
+      - '$_DEPLOY_REGION'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
@@ -48,12 +48,14 @@ steps:
       - 'ENVIRONMENT=production,LLM_MODEL=gemini/gemini-3.1-flash-lite,EMBEDDING_MODEL=models/gemini-embedding-001,VECTOR_DB_TYPE=qdrant,QDRANT_COLLECTION_NAME=agentic_rag_documents,QDRANT_URL=https://7e28c9e6-5aa7-41b9-9a5e-49b50e5a650c.us-east4-0.gcp.cloud.qdrant.io,RETRIEVAL_TOP_K=5,USE_HYBRID_SEARCH=true,LANGSMITH_TRACING=true,LANGSMITH_ENDPOINT=https://api.smith.langchain.com,LANGSMITH_PROJECT=Agentic_RAG'
 
 images:
-  - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag:$COMMIT_SHA'
-  - '$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/agentic-rag:latest'
+  - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:$COMMIT_SHA'
+  - '$_AR_HOSTNAME/$PROJECT_ID/$_AR_REPOSITORY/$_SERVICE_NAME:latest'
 
 substitutions:
-  _LOCATION: us-central1
-  _REPOSITORY: agentic-rag-repo
+  _DEPLOY_REGION: asia-south1
+  _AR_HOSTNAME: asia-south1-docker.pkg.dev
+  _AR_REPOSITORY: cloud-run-source-deploy
+  _SERVICE_NAME: enterprise-ai-platform-with-agentic-retrieval
 
 options:
   logging: CLOUD_LOGGING_ONLY
